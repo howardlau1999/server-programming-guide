@@ -2,6 +2,9 @@ site_name: 服务器编程新手入门 - Server Programming Guide
 site_url: https://liuhaohua.com/server-programming-guide/
 theme:
   name: material
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
 nav:
   - 概览: "index.md"
   - 编译链接基础知识:
