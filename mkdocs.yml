@@ -5,6 +5,7 @@ theme:
 markdown_extensions:
   - pymdownx.highlight
   - pymdownx.superfences
+  - pymdownx.tabbed
 nav:
   - 概览: "index.md"
   - 编译链接基础知识:
