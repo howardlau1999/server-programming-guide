@@ -1,17 +1,17 @@
-# Welcome to MkDocs
+# 服务器编程新手入门
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+这个教程写给具有一定的 C++ 程序设计基础，但对服务器编程还不太了解的读者。
 
-## Commands
+通过这个教程，你将会学习到：
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+- 如何使用现代的编译系统（Build System）来组织一个中小型 C++ 项目
+- 如何在 C++ 项目中使用第三方库
+- 如何使用常见的多线程、多进程编程范式
+- 如何通过 RPC 库将程序包装为服务器程序
+- 如何使用测试库对程序进行测试
+- 如何使用日志库记录程序运行中的关键信息
+- 如何使用调试器调试（运行中的）程序
+- 如何处理程序崩溃以及使用调试器恢复现场
+- 如何快速地上手一个他人编写的服务器程序
 
-## Project layout
-
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+尽管本教程以 C++ 为例，但会尽量抽象出服务器编程的常见范式以及概念，帮助你在以后进行快速的知识迁移。
