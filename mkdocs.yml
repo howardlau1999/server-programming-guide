@@ -2,3 +2,10 @@ site_name: 服务器编程新手入门 - Server Programming Guide
 site_url: https://example.com/
 theme:
   name: material
+nav:
+  - 概览: "index.md"
+  - 编译链接基础知识:
+    - 概览: "basics/index.md"
+  - 编译系统:
+    - 概览: "build-system/index.md"
+    - CMake: "build-system/cmake.md"
