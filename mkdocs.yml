@@ -1,2 +1,4 @@
-site_name: My Docs
+site_name: 服务器编程新手入门 - Server Programming Guide
 site_url: https://example.com/
+theme:
+  name: material
