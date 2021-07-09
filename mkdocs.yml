@@ -21,7 +21,6 @@ plugins:
   - search
   - git-revision-date-localized:
       type: iso_datetime
-      timezone: Asia/Shanghai
 markdown_extensions:
   - pymdownx.highlight
   - pymdownx.details
