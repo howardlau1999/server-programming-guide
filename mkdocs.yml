@@ -19,7 +19,9 @@ theme:
         name: 白天模式
 plugins:
   - search
-  - git-revision-date-localized
+  - git-revision-date-localized:
+      type: iso_datetime
+      timezone: Asia/Shanghai
 markdown_extensions:
   - pymdownx.highlight
   - pymdownx.details
@@ -38,6 +40,7 @@ nav:
     - 概览: "basics/index.md"
     - 编译过程概览: "basics/procedure.md"
     - 静态链接与动态链接: "basics/static-dynamic-linkage.md"
+    - 程序的装载与运行: "basics/loading.md"
   - 编译系统:
     - 概览: "build-system/index.md"
     - Autotools: "build-system/autotools.md"
@@ -60,5 +63,6 @@ nav:
       - 多进程共享队列: "parallel/practice/multi-processing-queue.md"
       - 线程池: "parallel/practice/thread-pool.md"
       - 进程池: "parallel/practice/process-pool.md"
-  
+  - 网络编程调库入门:
+    - 概览: "rpc/index.md"
   
