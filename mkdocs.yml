@@ -1,5 +1,6 @@
 site_name: 服务器编程新手入门 - Server Programming Guide
 site_url: https://liuhaohua.com/server-programming-guide/
+repo_url: https://github.com/howardlau1999/server-programming-guide/
 theme:
   name: material
 markdown_extensions:
