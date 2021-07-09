@@ -15,4 +15,25 @@ nav:
     - 静态链接与动态链接: "basics/static-dynamic-linkage.md"
   - 编译系统:
     - 概览: "build-system/index.md"
+    - Autotools: "build-system/autotools.md"
     - CMake: "build-system/cmake.md"
+    - Bazel: "build-system/bazel.md"
+    - 实战:
+      - 使用 CMake 编译多文件项目: "build-system/practice/cmake.md"
+      - 在项目中使用第三方库: "build-system/practice/third-party-library.md"
+  - 编写测试:
+    - 概览: "testing/index.md"
+  - 日志系统:
+    - 概览: "logging/index.md"
+  - 调试工具:
+    - 概览: "debugging/index.md"
+  - 进入并行编程世界:
+    - 多线程编程: "parallel/multi-threading.md"
+    - 多进程编程: "parallel/multi-processing.md"
+    - 实战:
+      - 多线程共享队列: "parallel/practice/multi-threading-queue.md"
+      - 多进程共享队列: "parallel/practice/multi-processing-queue.md"
+      - 线程池: "parallel/practice/thread-pool.md"
+      - 进程池: "parallel/practice/process-pool.md"
+  
+  
