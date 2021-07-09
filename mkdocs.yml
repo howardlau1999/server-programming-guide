@@ -6,6 +6,8 @@ nav:
   - 概览: "index.md"
   - 编译链接基础知识:
     - 概览: "basics/index.md"
+    - 编译过程概览: "basics/procedure.md"
+    - 静态链接与动态链接: "basics/static-dynamic-linkage.md"
   - 编译系统:
     - 概览: "build-system/index.md"
     - CMake: "build-system/cmake.md"
