@@ -18,5 +18,3 @@ By: [:material-github: howardlau1999](https://github.com/howardlau1999)
 - 如何快速地上手一个他人编写的服务器程序
 
 尽管本教程以 C++ 为例，但会尽量抽象出服务器编程的常见范式以及概念，帮助你在以后进行快速的知识迁移。
-
-最后更新: {{ git.date }} [ {{ git.author }} - {{ git.message }}](https://github.com/howardlau1999/server-programming-guide/commit/{{git.commit}})

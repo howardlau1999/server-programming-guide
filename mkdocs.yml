@@ -2,10 +2,24 @@ site_name: 服务器编程新手入门 - Server Programming Guide
 site_url: https://liuhaohua.com/server-programming-guide/
 repo_url: https://github.com/howardlau1999/server-programming-guide/
 theme:
+  icon:
+    repo: fontawesome/brands/github
   name: material
+  language: zh
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: 夜间模式
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: 白天模式
 plugins:
   - search
-  - macros
+  - git-revision-date-localized
 markdown_extensions:
   - pymdownx.highlight
   - pymdownx.details
