@@ -287,6 +287,42 @@ Hello, world
 
 当然，有时候我们不可避免地会写出循环引用的情况。例如 `a.o` 需要 `b.o` 的定义，`b.o` 需要 `c.o` 的定义，`c.o` 需要 `a.o` 的定义。此时我们无论如何调整链接顺序都不可能链接成功。所以，针对这种特殊情况，链接器提供了 `--start-group` 和 `--end-group` 这一对选项。位于这一对选项中的目标文件，链接器会不断地循环解决未定义符号，直到没有新的未定义符号可以被解决为止。当符号比较多的时候，可以想象这是一个很慢的过程，所以我们需要尽可能避免这种情况的发生。
 
+还有一个问题，链接器怎么知道程序应该从哪开始执行？实际上 `main` 函数并不是程序的真正入口。默认情况下，`ld` 会寻找 `_start` 符号，作为程序的起点。而这个符号，就包含在系统运行库当中。库当中的 `_start` 函数，最终会在初始化运行环境后，调用我们的 `main` 函数。
+
+???+note "查看可执行文件和目标文件的区别"
+    ```bash
+    $ readelf -h a.out
+    ELF Header:
+        Magic:   7f 45 4c 46 02 01 01 03 00 00 00 00 00 00 00 00
+        Class:                             ELF64
+        Data:                              2's complement, little endian
+        Version:                           1 (current)
+        OS/ABI:                            UNIX - GNU
+        ABI Version:                       0
+        Type:                              EXEC (Executable file)
+        Machine:                           Advanced Micro Devices X86-64
+        Version:                           0x1
+        Entry point address:               0x404a90
+        Start of program headers:          64 (bytes into file)
+        Start of section headers:          2368032 (bytes into file)
+        Flags:                             0x0
+        Size of this header:               64 (bytes)
+        Size of program headers:           56 (bytes)
+        Number of program headers:         8
+        Size of section headers:           64 (bytes)
+        Number of section headers:         30
+        Section header string table index: 29
+    ```
+    可以看到此时的 `Type` 变为可执行文件，同时多了一个 `Entry point address`，标志着程序的起点。
+
+    我们使用 `nm` 命令，来查看这个地址对应的符号。
+
+    ```bash
+    $ nm a.out | grep 404a90
+    0000000000404a90 T _start
+    ```
+
+    可以看到，程序入口并不是 `main` 函数，而是库所提供的 `_start` 函数。
 ## 总结
 
 至此，发生在 `g++` 背后的故事你已经简单地有了一个概念。理解这些过程以及原理是构建更大项目的基础。
