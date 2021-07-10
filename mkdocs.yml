@@ -9,6 +9,8 @@ theme:
   name: material
   custom_dir: docs/overrides
   language: zh
+  features:
+    - navigation.top
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
@@ -36,9 +38,13 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - footnotes
   - admonition
+  - toc:
+      permalink: true
+      slugify: !!python/name:pymdownx.slugs.uslugify
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
+  
 nav:
   - 概览: "index.md"
   - 编译链接基础知识:
@@ -74,4 +80,7 @@ nav:
       - 进程池: "parallel/practice/process-pool.md"
   - 网络编程调库入门:
     - 概览: "rpc/index.md"
+  - 与他人合作:
+    - 概览: "collaboration/index.md"
+    - 解决代码合并冲突: "collaboration/resolve-conflicts.md"
   
