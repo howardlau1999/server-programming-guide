@@ -33,6 +33,7 @@ markdown_extensions:
   - pymdownx.tabbed
   - pymdownx.keys
   - pymdownx.snippets
+  - pymdownx.inlinehilite
   - footnotes
   - admonition
   - pymdownx.emoji:
