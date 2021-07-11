@@ -135,7 +135,7 @@ hello.cpp  hello.preprocessed.cpp  hello.preprocessed.s
 
 可以看到 `cc1plus` 输出了编译后的汇编文件 `hello.preprocessed.s`。可以打开来查看其中的内容。
 
-???note "扩展知识 - C++ 命名混淆（Mangling）"
+???+note "扩展知识 - C++ 命名混淆（Mangling）"
 
     在汇编语言文件中，你可能会看到类似 `_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_` 的奇怪符号。这是 C++ 编译器对函数进行命名混淆后的结果。C++ 中有函数重载，以及命名空间等 C 所没有的语言特性。为了实现这些特性，C++ 编译器会将函数的命名空间，以及调用参数的类型都编码到函数符号中，也就是相当于为每一个函数都创建了新的名字。这样就能区分开不同命名空间以及不同函数重载的同名函数了。
 
