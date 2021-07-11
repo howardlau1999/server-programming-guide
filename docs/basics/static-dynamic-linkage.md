@@ -101,7 +101,7 @@ add(1, 2) = 3
 sub(1, 2) = -1
 ```
 
-我们的程序编译通过，运行也正常，这时你已经学会如何创建并使用一个库了！
+我们的程序编译通过，运行也正常，现在你已经学会如何创建并使用一个静态库了！
 
 ???+tip "使用 `#!cpp extern "C"` 导出函数"
     在[上一节的编译部分](procedure.md#编译)中，我们提到 C++ 编译器会对函数命名做混淆处理，在上面 `nm` 的输出中，我们也可以看到我们的 `add` 和 `sub` 函数名称前后附带了额外的字符。因为命名混淆的实现依赖于编译器实现，甚至不同版本的编译器混淆的方式也不一样。如果我们使用 C 语言程序来调用我们的库，或者使用了混淆方式不同的编译器，那么就会发生链接错误。
@@ -183,3 +183,66 @@ sub(1, 2) = -1
     Windows 后来也解决了这个问题，一个方法是保护系统的 DLL 不被修改，另一个方法是使用 [WinSxS](https://en.wikipedia.org/wiki/Side-by-side_assembly) 技术，在系统里存放 DLL 的不同版本，尽管应用程序还是会用同一个名字来加载 DLL，操作系统会检查版本并加载正确的二进制代码。还有一个办法就是直接在 DLL 文件名加上版本号，这样不同版本的 DLL 就不再是同一个 DLL 了。
 
     Linux 解决 DLL Hell 的办法有两个，一个是 `.so` 文件会带有版本号。其次，大多数 Linux 软件发布的时候都会提供源代码，用户可以自己编译。最后，大多数 Linux 发行版都带有包管理软件来管理软件的依赖，在安装软件时就检查依赖问题，避免了 DLL Hell。
+
+### 创建和使用动态链接库
+
+我们还是以 `add.cpp` 和 `sub.cpp` 为例，创建动态库不需要我们对代码做任何修改，只需要修改编译命令即可。首先我们需要将两个文件编译为 PIC 目标文件。我们只需要在编译的时候添加 `-fPIC` 选项即可。
+
+```bash
+$ g++ -fPIC -c -o add.o add.cpp
+$ g++ -fPIC -c -o sub.o sub.cpp
+```
+
+和创建静态库不同，我们不使用 `ar` 工具来创建库文件，而是使用 `ld` 工具来创建动态库。动态库的命名规则和 `.a` 文件的命名规则一样，只是后缀名变为 `.so`。
+
+```bash
+$ ld -shared -o libmylib.so add.o sub.o
+```
+
+使用 `readelf` 工具可以看到，我们的 `libmylib.so` 是动态库类型了。并且 `nm` 工具也展示了其中包含的符号。可以看到，`.so` 文件并不是简单的 `.o` 文件的集合，其中的函数地址经过了修改。
+
+```bash
+$ readelf -h libmylib.so
+ELF Header:
+  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00
+  Class:                             ELF64
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              DYN (Shared object file)
+  Machine:                           Advanced Micro Devices X86-64
+  Version:                           0x1
+  Entry point address:               0x1000
+  Start of program headers:          64 (bytes into file)
+  Start of section headers:          12872 (bytes into file)
+  Flags:                             0x0
+  Size of this header:               64 (bytes)
+  Size of program headers:           56 (bytes)
+  Number of program headers:         9
+  Size of section headers:           64 (bytes)
+  Number of section headers:         13
+  Section header string table index: 12
+$ nm libmylib.so
+0000000000003f40 d _DYNAMIC
+0000000000001000 T _Z3addii
+0000000000001018 T _Z3subii
+```
+
+和使用静态库一样，我们在程序中包含库的头文件，然后使用同样的命令编译即可。
+
+```bash
+$ g++ -I. main.cpp -L. -lmylib
+$ ./a.out
+./a.out: error while loading shared libraries: libmylib.so: cannot open shared object file: No such file or directory$ ./a.out
+```
+
+尽管编译成功了，但是运行的时候却提示找不到 `libmylib.so`，这是为什么呢？很快我们就会知道其中的原理，现在我们简单理解为系统默认并不会在我们的文件夹里寻找共享库，这个是由 `LD_LIBRARY_PATH` 环境变量决定的。我们将当前目录加入到这个环境变量中，然后再运行程序。
+
+```bash
+$ LD_LIBRARY_PATH=$(pwd):$LD_LIBRARY_PATH ./a.out
+add(1, 2) = 3
+sub(1, 2) = -1
+```
+
+程序正确地运行起来了！现在，你也学会了如何创建并使用一个动态库了。
