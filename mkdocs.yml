@@ -53,6 +53,7 @@ nav:
     - 静态链接与动态链接: "basics/static-dynamic-linkage.md"
     - 程序的装载与运行: "basics/loading.md"
     - 扩展知识：利用链接与加载覆盖程序函数: "basics/hooks.md"
+    - 扩展知识：交叉编译: "basics/cross-compilation.md"
   - 构建系统:
     - 概览: "build-system/index.md"
     - Make: "build-system/make.md"
