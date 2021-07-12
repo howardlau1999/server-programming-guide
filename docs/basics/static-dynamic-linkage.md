@@ -305,6 +305,20 @@ $ ls -l ./a.out
 
 可以看到此时的二进制大小是 17432 字节，比使用静态链接库的二进制小了 64 字节。
 
+???+note "使用 `ldd` 查看程序依赖哪些动态库"
+    我们可以使用 `ldd` 命令来查看我们的程序依赖什么动态库。
+
+    ```bash
+    $ ldd a.out                            
+        linux-vdso.so.1 (0x00007fff77fe7000)
+        libmylib.so (0x00007fd011dc7000)
+        libstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007fd011bc5000)
+        libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd0119db000)
+        libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fd01188c000)
+        /lib64/ld-linux-x86-64.so.2 (0x00007fd011dd2000)
+        libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fd011871000)
+    ```
+
 ???+tip
     如果你好奇尝试了的话，会发现即使上面编译目标文件的时候没有添加 `-fPIC` 选项，也能正常生成动态库。这是因为我们的函数并没有使用到全局的数据地址，事实上，那两个函数的参数会直接通过寄存器传递。为了演示 `-fPIC` 的必要性，我们可以修改 `sub.cpp` 为以下代码。
 
