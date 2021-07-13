@@ -86,7 +86,9 @@ nav:
     - 概览: "rpc/index.md"
   - 服务器程序常见范式:
     - 概览: "paradigms/index.md"
-    - 程序的配置与启动: "paradigms/config.md"
+    - 程序的运行配置: "paradigms/config.md"
+    - 注册请求处理器: "paradigms/handlers.md"
+    - 启动后台服务: "paradigms/background.md"
     - 创建监听端口监听请求: "paradigms/listen.md"
   - 与他人合作:
     - 概览: "collaboration/index.md"
