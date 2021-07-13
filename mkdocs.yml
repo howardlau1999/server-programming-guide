@@ -74,6 +74,8 @@ nav:
     - 概览: "metrics/index.md"
   - 调试工具:
     - 概览: "debugging/index.md"
+  - 内存管理:
+    - 概览: "memory/index.md"
   - 进入并行编程世界:
     - 多线程编程: "parallel/multi-threading.md"
     - 多进程编程: "parallel/multi-processing.md"
@@ -87,9 +89,14 @@ nav:
   - 服务器程序常见范式:
     - 概览: "paradigms/index.md"
     - 程序的运行配置: "paradigms/config.md"
+    - 控制反转: "paradigms/ioc.md"
     - 注册请求处理器: "paradigms/handlers.md"
     - 启动后台服务: "paradigms/background.md"
     - 创建监听端口监听请求: "paradigms/listen.md"
+  - 编写文档:
+    - 概览: "documentation/index.md"
+  - 部署上线: 
+    - 概览: "production/index.md"
   - 与他人合作:
     - 概览: "collaboration/index.md"
     - 解决代码合并冲突: "collaboration/resolve-conflicts.md"
