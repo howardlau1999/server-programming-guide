@@ -33,6 +33,7 @@ public:
         virutal void xxx() = 0;
     };
     ```
+    
 === "B.cpp"
 
     ```cpp
