@@ -68,6 +68,11 @@ nav:
       - 在项目中使用第三方库: "build-system/practice/third-party-library.md"
   - 编写测试:
     - 概览: "testing/index.md"
+  - 代码静态分析:
+    - 概览: "static-analysis/index.md"
+  - 持续集成:
+    - 概览: "ci/index.md"
+    - "使用 Github Actions 进行持续集成": "ci/github-actions.md"
   - 日志系统:
     - 概览: "logging/index.md"
   - 指标系统:
