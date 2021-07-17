@@ -1,6 +1,6 @@
 # 服务器编程新手入门
 
-By: [:material-github: howardlau1999](https://github.com/howardlau1999)
+By: [:material-github: howardlau1999](https://github.com/howardlau1999)、[:material-github: darkyzhou](https://github.com/darkyzhou)
 
 这个教程写给具有一定的 C++ 程序设计基础，但对服务器编程还不太了解的读者。
 
