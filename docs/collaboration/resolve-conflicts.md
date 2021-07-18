@@ -129,7 +129,7 @@ VSCode 会展示一个两栏的代码页，对比两个分支做出的改动，�
 
 如下图所示，除了能够可视化地展示改动，VSCode 还能够列出发生了合并冲突地所有文件，并以红色标记其文件名，降低我们漏掉冲突文件的可能性。
 
-![](img/highlighted-conflict-files.png)
+![](img/highlighted-conflict-file.png)
 
 ![](img/conflict-file-list.png)
 
