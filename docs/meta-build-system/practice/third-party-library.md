@@ -31,3 +31,24 @@ include(FetchContent)
 FetchContent_Declare(cpr GIT_REPOSITORY https://github.com/whoshuu/cpr.git GIT_TAG c8d33915dbd88ad6c92b258869b03aba06587ff9)
 FetchContent_MakeAvailable(cpr)
 ```
+
+## pkg-config
+
+有一些库提供了 `pkg-config` 文件，后缀名是 `.pc`，我们可以使用 `pkg-config` 命令来在编译的时候输出合适的编译参数。例如：
+
+```bash
+$ sudo apt install libmysqlclient-dev
+$ pkg-config --libs --cflags mysqlclient
+-I/usr/include/mysql -lmysqlclient
+$ g++ main.cpp `pkg-config --libs --cflags mysqlclient`
+```
+
+在 CMake 中，可以通过 `PkgConfig` 这个包及其提供的 `pkg_check_modules` 命令方便地引用已经存在的 `pkg-config` 文件。例如：
+
+```cmake
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(MySQL REQUIRED IMPORTED_TARGET mysqlclient>=21.0)
+target_link_libraries(my-server PkgConfig::MySQL)
+```
+
+其中 `pkg_check_modules` 第一个参数为引入后的变量前缀，这个例子里，会引入 `MySQL_LIBRARIES` 等变量。为了方便使用，还可以通过 `IMPORTED_TARGET` 来提供 `PkgConfig::MySQL` 这样的引入形式，最后便是指定包名以及包版本号。
