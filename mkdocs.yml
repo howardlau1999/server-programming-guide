@@ -106,7 +106,10 @@ nav:
   - 编写文档:
     - 概览: "documentation/index.md"
   - 部署上线: 
-    - 概览: "production/index.md"
+    - 概览: "deployment/index.md"
+    - 反向代理: "deployment/reverse-proxy.md"
+    - "systemd 部署": "deployment/systemd.md"
+    - "Docker 部署": "deployment/docker.md"
   - 与他人合作:
     - 概览: "collaboration/index.md"
     - 解决代码合并冲突: "collaboration/resolve-conflicts.md"
