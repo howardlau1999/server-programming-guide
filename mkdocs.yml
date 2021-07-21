@@ -84,8 +84,14 @@ nav:
     - 概览: "metrics/index.md"
   - 调试工具:
     - 概览: "debugging/index.md"
+    - "gdb 调试工具": "debugging/gdb.md"
+    - "配置 VS Code 调试": "debugging/vscode.md"
+    - "调试 coredump": "debugging/coredump.md"
   - 内存管理:
     - 概览: "memory/index.md"
+    - 智能指针: "memory/smart-pointer.md"
+    - "AddressSanitizer 内存安全检测": "memory/address-sanitizer.md"
+    - "Valgrind 内存泄露检测": "memory/valgrind.md"
   - 进入并行编程世界:
     - 多线程编程: "parallel/multi-threading.md"
     - 多进程编程: "parallel/multi-processing.md"
