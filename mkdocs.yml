@@ -100,8 +100,12 @@ nav:
       - 多进程共享队列: "parallel/practice/multi-processing-queue.md"
       - 线程池: "parallel/practice/thread-pool.md"
       - 进程池: "parallel/practice/process-pool.md"
-  - 网络编程调库入门:
+  - 网络编程 RPC 入门:
     - 概览: "rpc/index.md"
+    - 序列化与反序列化: "rpc/serialization.md"
+    - "使用 RPC 框架": "rpc/framework.md"
+    - 编写服务端: "rpc/server.md"
+    - 编写客户端: "rpc/client.md"
   - 服务器程序常见范式:
     - 概览: "paradigms/index.md"
     - 程序的运行配置: "paradigms/config.md"
