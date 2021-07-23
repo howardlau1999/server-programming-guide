@@ -280,8 +280,8 @@ Hello, world
 
 可以看到，经过复杂的链接过程，我们终于得到了熟悉的可执行文件。
 
-???+note `a.out` 的由来
-    `a.out` 这个名字是起源于古老的 Unix 系统，是 "assembler output" 的缩写，来自于 Ken Thompson 的 PDP-7 汇编器。`a.out` 也是一种二进制格式，由于欠缺比较多的功能，逐渐被 ELF、PE 等格式替代。早期 Linux 系统也支持 `a.out` 文件格式，现在的 Linux 系统常用的都是 ELF 格式的二进制，而 `a.out` 格式在 Linux 内核 5.1 版本中被正式移除支持。而 `a.out` 这个名字仍然被用来作为编译器产物的默认名称。
+???+note "`a.out` 的由来"
+    `a.out` 这个名字是起源于古老的 Unix 系统，是 "assembler output" 的缩写，来自于 Ken Thompson 的 PDP-7 汇编器。`a.out` 也是一种二进制格式，由于欠缺比较多的功能，逐渐被 ELF、PE 等格式替代。早期 Linux 系统也支持 `a.out` 文件格式，现在的 Linux 系统常用的都是 ELF 格式的二进制，而 `a.out` 格式在 Linux 内核 5.1 版本中被正式移除支持。而 `a.out` 这个名字仍然被用来作为编译器产物的默认名称。更多故事可以参考[维基百科](https://en.wikipedia.org/wiki/A.out)。
 
 调用 `ld` 命令，只需要将我们希望链接的目标文件一股脑传进去就可以了。而一些系统库并不是以 `.o` 的目标文件形式存放的，而是以 `.a` 文件形式存放的。`.a` 文件其实就是将许多 `.o` 文件拼起来的文件。`.a` 文件往往都以 `lib***.a` 的形式命名。如果我们传参 `-labc`，那么链接器就会去寻找 `libabc.a` 这个文件。这个相当于是一个捷径。
 
@@ -342,7 +342,7 @@ Hello, world
 
     Windows 上的编译器是 `cl`，如果你用的是 Developer Powershell 的话，可以用这个命令编译程序。使用 `g++` 命令编译也可以。
 
-    ```powershell
+    ```powershell hl_lines="39 52"
     > cl /EHsc .\hello.cpp
     Microsoft (R) C/C++ Optimizing Compiler Version 19.28.29337 for x86
     Copyright (C) Microsoft Corporation.  All rights reserved.
@@ -445,6 +445,69 @@ Hello, world
             2000 .reloc
            1D000 .text
     ```
+
+    程序有类似的 Entry Point 地址，还有 Windows 上标识一个程序是不是图形界面程序的标志。这里 CUI 表示这个程序是 Console UI，也就是控制台程序。
+
+    我们可以看看记事本程序的标志：
+
+    ```powershell hl_lines="41"
+    > dumpbin /headers C:\Windows\System32\notepad.exe
+    Microsoft (R) COFF/PE Dumper Version 14.28.29337.0
+    Copyright (C) Microsoft Corporation.  All rights reserved.
+    
+    
+    Dump of file C:\Windows\System32\notepad.exe
+    
+    PE signature found
+    
+    File Type: EXECUTABLE IMAGE
+    
+    FILE HEADER VALUES
+                8664 machine (x64)
+                   7 number of sections
+            86FCBD69 time date stamp
+                   0 file pointer to symbol table
+                   0 number of symbols
+                  F0 size of optional header
+                  22 characteristics
+                       Executable
+                       Application can handle large (>2GB) addresses
+    
+    OPTIONAL HEADER VALUES
+                 20B magic # (PE32+)
+               14.20 linker version
+               24A00 size of code
+                E200 size of initialized data
+                   0 size of uninitialized data
+               23DB0 entry point (0000000140023DB0)
+                1000 base of code
+           140000000 image base (0000000140000000 to 0000000140037FFF)
+                1000 section alignment
+                 200 file alignment
+               10.00 operating system version
+               10.00 image version
+               10.00 subsystem version
+                   0 Win32 version
+               38000 size of image
+                 400 size of headers
+               36BB0 checksum
+                   2 subsystem (Windows GUI)
+                C160 DLL characteristics
+                       High Entropy Virtual Addresses
+                       Dynamic base
+                       NX compatible
+                       Control Flow Guard
+                       Terminal Server Aware
+               80000 size of stack reserve
+               11000 size of stack commit
+              100000 size of heap reserve
+                1000 size of heap commit
+                   0 loader flags
+                  10 number of directories
+    # ...
+    ```
+
+    记事本不出意外的是 GUI 程序了。如果你好奇有什么其他的 Subsystem，可以看[微软的官方文档](https://docs.microsoft.com/en-us/cpp/build/reference/subsystem-specify-subsystem)。
 
 ## 总结
 
