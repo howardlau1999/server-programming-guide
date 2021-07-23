@@ -280,6 +280,9 @@ Hello, world
 
 可以看到，经过复杂的链接过程，我们终于得到了熟悉的可执行文件。
 
+???+note `a.out` 的由来
+    `a.out` 这个名字是起源于古老的 Unix 系统，是 "assembler output" 的缩写，来自于 Ken Thompson 的 PDP-7 汇编器。`a.out` 也是一种二进制格式，由于欠缺比较多的功能，逐渐被 ELF、PE 等格式替代。早期 Linux 系统也支持 `a.out` 文件格式，现在的 Linux 系统常用的都是 ELF 格式的二进制，而 `a.out` 格式在 Linux 内核 5.1 版本中被正式移除支持。而 `a.out` 这个名字仍然被用来作为编译器产物的默认名称。
+
 调用 `ld` 命令，只需要将我们希望链接的目标文件一股脑传进去就可以了。而一些系统库并不是以 `.o` 的目标文件形式存放的，而是以 `.a` 文件形式存放的。`.a` 文件其实就是将许多 `.o` 文件拼起来的文件。`.a` 文件往往都以 `lib***.a` 的形式命名。如果我们传参 `-labc`，那么链接器就会去寻找 `libabc.a` 这个文件。这个相当于是一个捷径。
 
 链接器和预处理器一样，并不知道 `.a` 文件都在哪，所以需要我们通过 `-L` 选项来指定库路径（Library Path）。配合上面的 `-l`，链接器就能找到 `.a` 文件并链接起来了。
@@ -329,6 +332,119 @@ Hello, world
     ```
 
     可以看到，程序入口并不是 `main` 函数，而是库所提供的 `_start` 函数。
+
+???+note "不同操作系统的差别"
+    在不同的操作系统上，程序的编译链接过程是一样的，只是使用了不同的二进制存储格式，例如，Windows 使用 COFF 和 PE 格式存储库和可执行文件。不同的二进制格式虽然在细节上有所差别，但是保存的内容基本上都是一样的，例如程序的入口、程序的运行方式（比如 Windows 会在 PE 文件中标识一个程序是用图形界面运行还是命令行界面运行）、程序代码等。这里是不同操作系统使用的二进制程序格式对比：[https://en.wikipedia.org/wiki/Comparison_of_executable_file_formats](https://en.wikipedia.org/wiki/Comparison_of_executable_file_formats)。
+
+???+note "查看 Windows 的二进制信息"
+    Windows 上可以使用 DUMPBIN 程序来查看一个可执行文件的信息。要使用这个工具，可以单独下载，也可以安装 Visual Studio，然后启动 Developer PowerShell for VS 2019。
+
+    Windows 上的编译器是 `cl`，如果你用的是 Developer Powershell 的话，可以用这个命令编译程序。使用 `g++` 命令编译也可以。
+
+    ```powershell
+    > cl /EHsc .\hello.cpp
+    Microsoft (R) C/C++ Optimizing Compiler Version 19.28.29337 for x86
+    Copyright (C) Microsoft Corporation.  All rights reserved.
+
+    hello.cpp
+    Microsoft (R) Incremental Linker Version 14.28.29337.0
+    Copyright (C) Microsoft Corporation.  All rights reserved.
+
+    /out:hello.exe
+    hello.obj
+    > dumpbin /headers hello.exe
+    Microsoft (R) COFF/PE Dumper Version 14.28.29337.0
+    Copyright (C) Microsoft Corporation.  All rights reserved.
+    
+    
+    Dump of file .\hello.exe
+    
+    PE signature found
+    
+    File Type: EXECUTABLE IMAGE
+    
+    FILE HEADER VALUES
+                 14C machine (x86)
+                   4 number of sections
+            60FA3CB7 time date stamp Fri Jul 23 11:51:19 2021
+                   0 file pointer to symbol table
+                   0 number of symbols
+                  E0 size of optional header
+                 102 characteristics
+                       Executable
+                       32 bit word machine
+    
+    OPTIONAL HEADER VALUES
+                 10B magic # (PE32)
+               14.28 linker version
+               1D000 size of code
+               11600 size of initialized data
+                   0 size of uninitialized data
+                6905 entry point (00406905)
+                1000 base of code
+               1E000 base of data
+              400000 image base (00400000 to 0042FFFF)
+                1000 section alignment
+                 200 file alignment
+                6.00 operating system version
+                0.00 image version
+                6.00 subsystem version
+                   0 Win32 version
+               30000 size of image
+                 400 size of headers
+                   0 checksum
+                   3 subsystem (Windows CUI)
+                8140 DLL characteristics
+                       Dynamic base
+                       NX compatible
+                       Terminal Server Aware
+              100000 size of stack reserve
+                1000 size of stack commit
+              100000 size of heap reserve
+                1000 size of heap commit
+                   0 loader flags
+                  10 number of directories
+                   0 [       0] RVA [size] of Export Directory
+               2B34C [      28] RVA [size] of Import Directory
+                   0 [       0] RVA [size] of Resource Directory
+                   0 [       0] RVA [size] of Exception Directory
+                   0 [       0] RVA [size] of Certificates Directory
+               2E000 [    1E84] RVA [size] of Base Relocation Directory
+               2989C [      1C] RVA [size] of Debug Directory
+                   0 [       0] RVA [size] of Architecture Directory
+                   0 [       0] RVA [size] of Global Pointer Directory
+                   0 [       0] RVA [size] of Thread Storage Directory
+               298B8 [      40] RVA [size] of Load Configuration Directory
+                   0 [       0] RVA [size] of Bound Import Directory
+               1E000 [     128] RVA [size] of Import Address Table Directory
+                   0 [       0] RVA [size] of Delay Import Directory
+                   0 [       0] RVA [size] of COM Descriptor Directory
+                   0 [       0] RVA [size] of Reserved Directory
+
+    SECTION HEADER #1
+       .text name
+       1CFD8 virtual size
+        1000 virtual address (00401000 to 0041DFD7)
+       1D000 size of raw data
+         400 file pointer to raw data (00000400 to 0001D3FF)
+           0 file pointer to relocation table
+           0 file pointer to line numbers
+           0 number of relocations
+           0 number of line numbers
+    60000020 flags
+             Code
+             Execute Read
+    
+    # ... 省略
+    
+      Summary
+    
+            2000 .data
+            E000 .rdata
+            2000 .reloc
+           1D000 .text
+    ```
+
 ## 总结
 
 至此，发生在 `g++` 背后的故事你已经简单地有了一个概念。理解这些过程以及原理是构建更大项目的基础。
