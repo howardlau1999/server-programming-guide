@@ -333,8 +333,9 @@ Hello, world
 
     可以看到，程序入口并不是 `main` 函数，而是库所提供的 `_start` 函数。
 
-???+note "不同操作系统的差别"
-    在不同的操作系统上，程序的编译链接过程是一样的，只是使用了不同的二进制存储格式，例如，Windows 使用 COFF 和 PE 格式存储库和可执行文件。不同的二进制格式虽然在细节上有所差别，但是保存的内容基本上都是一样的，例如程序的入口、程序的运行方式（比如 Windows 会在 PE 文件中标识一个程序是用图形界面运行还是命令行界面运行）、程序代码等。这里是不同操作系统使用的二进制程序格式对比：[https://en.wikipedia.org/wiki/Comparison_of_executable_file_formats](https://en.wikipedia.org/wiki/Comparison_of_executable_file_formats)。
+## 不同操作系统的知识迁移
+
+在不同的操作系统上，程序的编译链接过程是一样的，只是使用了不同的二进制存储格式，例如，Windows 使用 COFF 和 PE 格式存储库和可执行文件。不同的二进制格式虽然在细节上有所差别，但是保存的内容基本上都是一样的，例如程序的入口、程序的运行方式（比如 Windows 会在 PE 文件中标识一个程序是用图形界面运行还是命令行界面运行）、程序代码等。[这里](https://en.wikipedia.org/wiki/Comparison_of_executable_file_formats)是不同操作系统使用的二进制程序格式对比。
 
 ???+note "查看 Windows 的二进制信息"
     Windows 上可以使用 DUMPBIN 程序来查看一个可执行文件的信息。要使用这个工具，可以单独下载，也可以安装 Visual Studio，然后启动 Developer PowerShell for VS 2019。
