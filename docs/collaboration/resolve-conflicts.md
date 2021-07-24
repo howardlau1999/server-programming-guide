@@ -2,6 +2,9 @@
 
 在使用 Git 对我们的项目代码进行版本管理时，我们往往会使用各种分支（branch）来将我们的代码隔离在其他人的分支和主分支以外，这样我们就能确保我们的代码不会影响到其他人，也不会影响到项目的主分支。然而，当我们完成了自己的工作，准备将自己的分支合并到主分支时，有可能会出现合并冲突（merge conflict），导致我们的分支无法被合并。
 
+???+info
+    本文中会多次出现主分支的概念。狭义上，主分支指的是像 `master` 分支或 `main` 分支这样的分支，它们是各种特性（feature）分支、bug 修复分支等分支的最终归属。广义上，它们也可以指那些汇聚了多个分支的修改的分支，比如开发（develop）分支或者测试（test）分支，这些分支在经过充分的测试之后会进入下一个流程，比如合并到最终的 `master` 分支。
+
 什么是合并冲突？如何解决合并冲突？本篇文章接下来将一一介绍。此外，本文还会对比 `git merge` 和 `git rebase` 在合并分支上的区别，以及介绍 `fast-forward` 方法和一些有效缓解合并冲突产生的方法。
 
 ## 什么是合并冲突
@@ -194,12 +197,14 @@ Git 并没有像 `merge` 那样再输出一些折线了，**我们得到了一�
 
 究竟应该使用 `merge` 还是 `rebase`，或者说这两种方法孰优孰劣，是程序员们除了究竟使用 tab 还是 space 作为缩进外的又一个争论不休的话题。
 
-有些人认为前者虽然产生的历史记录很复杂，提高认知成本，但是它相对更安全，并且追溯各种分支源头的时候更为方便。另一些人则认为后者产生的历史记录平整、简单，共容易查看。关于这个话题的更多讨论可以在互联网上搜索得到，本文章不会给出决定性的建议，不过我们推荐使用 Git 的新手使用 `merge`。
+对于 `merge` 来说，虽然它较为安全，能够直观地展示各个分支的关系，但是在大型项目中往往会遇到分支数量过多导致 Git 历史记录乱成一团的问题。对于 `rebase` 来说，它则能够产生平整、简单的历史记录，但缺点是隐藏了真正的提交记录。
 
 ???+caution
-    由于 `rebase` 会对当前分支的 commit 序列造成较大幅度的修改，我们必须谨慎地使用它。例如，如果我们在公共的分支，比如 `master` 上执行 `rebase`，那么很可能会对其他在此分支上工作的人造成恶劣影响，他们很可能会遇到大量复杂的合并冲突。
+    由于 `rebase` 会对当前分支的 commit 序列造成较大幅度的修改，我们必须谨慎地使用它。例如，如果我们在公共的分支，比如 `master` 上执行 `rebase`，那么很可能会对其他在此分支上工作的人造成恶劣影响，例如造成大量的合并冲突。
     
-    又如，[《How to Fix Your Git Branches After a Rebase》](https://www.viget.com/articles/how-to-fix-your-git-branches-after-a-rebase/)这篇文章里就介绍了一个不谨慎使用 `rebase` 导致的问题。不幸的是，`rebase` 可能造成的问题不止这一种，详情请使用搜索引擎搜索相关资料。
+    又如，`rebase` 可能会导致重复冲突的问题。如果在 `a` 分支上进行 `git rebase master`，而在 `master` 上又出现了很多新的提交，那么在 Git 对你的 `a` 分支上的新提交进行冲突检查时，一种不幸的情况是你在 `a` 分支上的大量提交都产生了冲突，而 **Git 会要求你一个一个地解决这些提交对应的冲突**。但是这种情况对于 `merge` 来说却不是问题，因为它会先将 `master` 上新的提交”压缩“为一个提交，然后和当前的分支进行冲突检查，因此我们最多只会需要解决一次合并冲突。
+
+究竟是使用 `merge` 还是 `rebase`，更多讨论可以在互联网上搜索得到，本文章不会给出决定性的建议，但会在后文列举一些有经验的开发者的实践，仅供参考。如果你是 Git 的初学者，我们建议使用 `merge` 为主。
 
 ## `git pull`
 
@@ -255,6 +260,73 @@ $ git merge --ff-only FETCH_HEAD
 ```
 
 从命令中可以看到，`fast-forward` 是一种特殊的 `merge`。简单来说，他会像 `rebase` 那样合并分支，不会出现额外的 commit，也不会在 commit 记录里留下折线。但是，**如果出现像合并冲突这样的问题，它会拒绝进行合并**。由此看来，`fast-forward` 是一个相当安全的合并方法。很多人都推荐使用 `fast-forward`。
+
+???+info
+    你可以使用 `git config pull.ff only` 来让 `git pull` 默认使用 `fast-forward`。
+
+## 参考实践
+
+接下来将介绍一些常见的有关 Git 合并分支的实践，供读者参考。
+
+### 在自己的分支上使用 `rebase`
+
+在多数情况下，我们会因为要添加一项新功能，或者是进行一项修复工作而在主分支里创建一个新的分支，然后在上面工作。
+
+某些时候，我们的工作可能需要依赖别人新做出的修改，比如某人修了一个 bug 并把分支合并到了主分支里，而我们刚好需要这个 bug 的修复。那么我们可以将主分支使用 `rebase` 来合并到我们自己的分支上。
+
+这样做改变了我们分支的提交记录，因为我们的分支原本是从主分支上更早的提交上分出来的，`rebase` 之后则让它变成了基于主分支的最新提交。这样做在大多数情况下是可以接受的，我们不妨对比一下如果使用的是 `merge` 会怎么样：
+
+1. 如上文所说，它会在我们的分支上产生一个合并的 commit。
+2. 同时，在提交记录里会出现一条从主分支指向我们的分支的折线。
+
+这样的结果让人难以接受，我们只是想利用一下主分支上最新的修改，却对提交记录产生了这些看上去不太必要的影响。如果我们使用 `rebase`，我们将摆脱上面的两点结果，得到清晰直观的提交记录。当然，使用 `rebase` 依然存在上文提到的重复冲突的问题，但对于我们自己的分支来说问题出现的概率或冲突的规模是较低的，因为我们的分支一般只会有较为少量的修改。
+
+### 在合并自己分支时使用 `merge --no-ff`
+
+一般来说，当我们在自己的分支上完成工作之后，我们会在主分支上使用 `git merge --no-ff` 来合并我们自己的分支。为什么要使用 `--no-ff` 参数呢？
+
+默认情况下，`merge` 会使用 `--ff`，也就是说在条件允许的情况下使用 `fast-forward`，否则会创建一个用于合并的 commit。`--no-ff` 则是禁止使用 `fast-forward`，让 Git 总是创建一个新的 commit。
+
+二者的区别主要体现在这样的一种情况：我们的主分支 `develop` 一直都没有任何修改，同时我们在刚分出来的 `feature` 分支做了几个 commit 并合并到主分支，这时二者的区别如下图所示（图片来自[《A successful Git branching model》](https://nvie.com/posts/a-successful-git-branching-model/)：
+
+![](img/merge-no-ff.png)
+
+二者得到了不同的提交记录。右边的 `--ff` 在执行时发现情况适合，使用了 `fast-forward`，导致我们得到了一条呈直线形态的提交记录。这样看上去虽然很清晰，但**它让我们的 `feature` 分支被包含到了 `develop` 分支里**。在可视化的 Git 工具里，左边产生的提交记录能够让人们更直观地看到 `feature` 分支的存在，并且也能清晰地展现 `feature` 分支的独立性（从哪里分出来，又汇入到哪里）。
+
+### 灵活运用 squash
+
+squash 指的是将若干个 commit 合并为一个单独的 commit。此技巧常用在我们在自己的分支上工作完成后，在合并到主分支之前。有些团队鼓励这样做，因为在 squash 之后，我们的分支只剩下一个 commit，这样在合并之后，我们只会在主分支的提交记录上留下一个 commit 的记录，而这个 commit 正好对应了一个分支的所有修改，因此审阅起来是方便且直观的。
+
+要进行 squash，我们可以使用交互式 `rebase`。通过运行 `git rebase -i HEAD~n`，Git 会调出文本编辑器来编辑当前分支最近 `n` 个 commit 的记录，例如：
+
+```
+pick d62788c commit a 2
+pick e7eb691 commit a 3
+pick e4846ad commit a 4
+
+# Rebase 1bf37aa..e4846ad onto 1bf37aa (3 commands)
+#
+# Commands:
+# p, pick <commit> = use commit
+# r, reword <commit> = use commit, but edit the commit message
+# e, edit <commit> = use commit, but stop for amending
+# s, squash <commit> = use commit, but meld into previous commit
+# f, fixup <commit> = like "squash", but discard this commit's log message
+# x, exec <command> = run command (the rest of the line) using shell
+# b, break = stop here (continue rebase later with 'git rebase --continue')
+# d, drop <commit> = remove commit
+# l, label <label> = label current HEAD with a name
+# t, reset <label> = reset HEAD to a label
+# m, merge [-C <commit> | -c <commit>] <label> [# <oneline>]
+```
+
+注意，commit 的输出顺序为从老到新，最下面的一行才是最新的 commit。将 最下面的两行前面的 `pick` 命令修改为 `s` 或 `squash`，并保存退出，这样 Git 就会将最新的两个 commit 合并到第一个 commit 里，同时调出另一个文本编辑器来要求我们输入这个新的融合 commit 的信息。
+
+???+info
+    交互式 `rebase` 还有很多强大的功能。如果你想知道有关其他命令的作用，请参考[官方文档](https://git-scm.com/docs/git-rebase)。
+
+???+info
+    `git merge` 也有一个叫做 `--squash` 选项，它的作用是将目标分支的所有新的 commit 合并为一个融合 commit 并放到当前分支上，但**不会对目标分支做任何修改。**
 
 ## 缓解合并冲突的产生
 
