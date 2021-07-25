@@ -75,6 +75,7 @@ nav:
     - 概览: "testing/index.md"
   - 代码静态分析:
     - 概览: "static-analysis/index.md"
+    - 代码格式化: "static-analysis/format.md"
   - 持续集成:
     - 概览: "ci/index.md"
     - "使用 Github Actions 进行持续集成": "ci/github-actions.md"
