@@ -114,3 +114,7 @@ $ LD_DEBUG=all LD_LIBRARY_PATH=$(pwd) ./a.out
 ```
 
 可以看到 `ld.so` 如何在库中查找需要的函数。
+
+## 知识迁移
+
+在 Windows 上，一样是有类似的程序加载器，Windows 上叫做 Image Loader。不过，它并不是一个单独的可执行文件，而是内置在了 `ntdll.dll` 中，主要的入口函数是 `LdrpInitializeProcess`，我们可以通过 Windows SDK 中的 `GFLAGS` 和 `WinDbg` 工具来观察程序在 Windows 上是如何运行起来的。
