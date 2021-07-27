@@ -120,3 +120,67 @@ $1 = 10
 ```
 
 可以看到调试器加载了 core 文件，恢复了程序运行时候的现场，我们可以通过检查程序崩溃时候的变量以及调用栈等，来排查 bug。除了不可以运行程序以外，其他都和普通的调试没有区别。
+
+### 手动生成 core 文件
+
+除了程序异常退出会生成 core 文件以外，我们也可以通过 `gcore` 命令来获得一个运行中的进程的内存转储。首先我们写一个死循环程序：
+
+=== "loop.cpp"
+
+    ```cpp
+    #include <iostream>
+    #include <unistd.h>
+    using namespace std;
+
+    void loop() {
+        int count = 0;
+        while (1) {
+            sleep(1);
+            cout << count << endl;
+            ++count;
+        }
+    }
+
+    int main() {
+        loop();
+        return 0;
+    }
+    ```
+
+编译运行，然后开第二个终端进行操作。首先删除已有的 core 文件，然后设置 core 文件限制，使用 `pidof` 找到进程的 PID，用 `gcore` 生成转储文件。需要注意使用 `gcore` 命令需要有 root 权限。
+
+=== "第一个终端"
+
+    ```bash
+    $ g++ -g loop.cpp
+    $ ./a.out
+    0
+    1
+    2
+    3
+    ...
+    ```
+
+=== "第二个终端"
+    ```bash
+    $ rm core
+    $ ulimit -c unlimited
+    $ pidof a.out
+    15932
+    $ sudo gcore 15932
+    0x00007fe9eabbb00a in clock_nanosleep () from /lib/x86_64-linux-gnu/libc.so.6
+    warning: Memory read failed for corefile section, 4096 bytes at 0xffffffffff600000.
+    Saved corefile core.15932
+    [Inferior 1 (process 15932) detached]
+    $ ls
+    a.out  loop.cpp  core.15932
+    ```
+
+可以看到 `gcore` 生成的 core 文件会带有 PID 后缀。而程序在转储之后不受影响，可以继续运行。接下来可以用上面提到的方法加载 core 文件进行调试。
+
+???+warning "谨慎使用 `gcore` 命令"
+    对内存占用较高的程序使用 `gcore` 命令的话可能需要较长时间来保存内存快照，可能会造成程序运行的长时间卡顿。
+
+## 总结
+
+内存转储是程序运行现场的快照，对于调试有着重要作用，在遇到难以复现或者日志难以排查的 bug 时，一定要注意保存并利用好 core 文件来帮助我们开发者进行调试。
