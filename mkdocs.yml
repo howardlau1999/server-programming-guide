@@ -87,7 +87,7 @@ nav:
     - 概览: "debugging/index.md"
     - "gdb 调试工具": "debugging/gdb.md"
     - "配置 VS Code 调试": "debugging/vscode.md"
-    - "调试 coredump": "debugging/coredump.md"
+    - "调试内存转储文件": "debugging/coredump.md"
   - 内存管理:
     - 概览: "memory/index.md"
     - 智能指针: "memory/smart-pointer.md"
