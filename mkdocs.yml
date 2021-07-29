@@ -63,6 +63,8 @@ nav:
     - Make: "build-system/make.md"
     - Ninja: "build-system/ninja.md"
     - Bazel: "build-system/bazel.md"
+    - 编译缓存: "build-system/build-cache.md"
+    - 分布式编译: "build-system/distributed-compiling.md"
   - 元构建系统:
     - 概览: "meta-build-system/index.md"
     - Autotools: "meta-build-system/autotools.md"
