@@ -73,6 +73,7 @@ nav:
       - 在项目中使用第三方库: "meta-build-system/practice/third-party-library.md"
   - 编写测试:
     - 概览: "testing/index.md"
+    - "使用 Google Test 进行测试": "testing/googletest.md"
   - 代码静态分析:
     - 概览: "static-analysis/index.md"
     - 代码格式化: "static-analysis/format.md"
