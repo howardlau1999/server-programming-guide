@@ -127,4 +127,5 @@ nav:
   - 与他人合作:
     - 概览: "collaboration/index.md"
     - 解决代码合并冲突: "collaboration/resolve-conflicts.md"
+    - "Git stash 与 working trees 的使用": "collaboration/stash-and-worktree.md"
   

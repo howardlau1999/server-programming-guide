@@ -340,61 +340,6 @@ pick e4846ad commit a 4
 ???+info
     `git merge` 也有一个叫做 `--squash` 选项，它的作用是将目标分支的所有新的 commit 合并为一个融合 commit 并放到当前分支上，但**不会对目标分支做任何修改。**
 
-### stash 的使用
+### `stash` 与 `worktree` 的使用
 
-有的时候，我们可能在自己的分支上进行着工作，暂存区和工作区里含有大量修改。而这时 leader 突然让我们立刻修复一个严重的 bug，而这需要我们从主分支里开出一个新分支，并将当前的分支切换过去。
-
-但是，我们不希望在切换分支之后暂存区和工作区里还留着我们之前的修改，一方面我们之前的修改可能还不完善，会让程序无法运行，另一方面，对 bug 的修复通常需要基于和 bug 发生时的版本最贴近的分支。而且，有时候我们还没提交的修改会和其他分支的提交产生冲突，这时候 Git 不会允许我们切换分支，就像下面的提示一样：
-
-``` hl_lines="5"
-$ git checkout a
-error: Your local changes to the following files would be overwritten by checkout:
-	example.txt
-Please commit your changes or stash them before you switch branches.
-Aborting
-```
-
-仔细一看，Git 提示我们要么提交我们的修改，要么使用 `stash`。提交大多数情况下是不可接受的，我们才不会想要提交一些还没有完成的修改。这时 `git stash` 命令就能派上用场了。
-
-stash 在英语里的意思是藏匿，也就是说我们可以将暂存区和工作区里的修改暂时藏起来，然后 Git 会认为我们什么修改也没做，我们因此可以顺利地切换到新的分支。等到 bug 修复，我们切回到原来的分支之后，我们可以让原来被藏起来的修改重新“现形”，出现在暂存区或工作区中。
-
-我们还是以 `example.txt` 为例子，假如我们此时在 `a` 分支上给此文件添加了新的一行 `new line`，但还没来得及进行 `git add` 或者是 `git commit` 等操作。这时候 leader 需要我们从 `master` 分支上切出新的 `bug-fix` 分支来修复一个 bug，那么这时候我们可以运行 `git stash`，得到以下输出：
-
-```
-$ git stash
-Saved working directory and index state WIP on a: 4404526 commit a 1
-```
-
-这时我们运行 `git status`，得到以下输出：
-
-```
-$ git status
-On branch a
-Your branch is up to date with 'origin/a'.
-
-nothing to commit, working tree clean
-```
-
-我们的工作区和暂存区都为空，就好像我们从来没有做出那行修改一样！这时我们就能切换到其他分支，进行别的工作了。当我们回到 `a` 分支时，可以使用 `git stash pop` 来恢复之前的修改：
-
-```
-On branch a
-Your branch is up to date with 'origin/a'.
-
-Changes not staged for commit:
-  (use "git add <file>..." to update what will be committed)
-  (use "git restore <file>..." to discard changes in working directory)
-	modified:   example.txt
-
-no changes added to commit (use "git add" and/or "git commit -a")
-Dropped refs/stash@{0} (6349d71a1c2d7647b38e917b5e4506afd4ae5a3a)
-```
-
-可以看到，我们之前对 `example.txt` 的修改已经重新出现。以上就是 `git stash` 的基本用法介绍。
-
-???+info
-    `git stash` 命令其实是 `git stash push` 的缩写。从 `push` 和 `pop` 的关系可以看出，Git 保存我们修改的数据结构是一个栈，这意味着我们可以多次使用 `git stash`，并通过 `push` 和 `pop` 来存取我们的修改。
-
-    特别地，进行 `push` 和 `pop` 操作并不是必须在同一个分支上进行，我们可以暂存在一个分支上的修改，然后将它释放到另一个分支上。
-
-    使用 `git stash list` 命令可以查看当前暂存的所有批次的修改。其他命令及更多参数请见[官方文档](https://git-scm.com/docs/git-stash)。
+参见[《Git stash 与 working trees 的使用》](stash-and-worktree.md)。
