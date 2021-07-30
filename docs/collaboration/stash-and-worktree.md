@@ -82,6 +82,6 @@ HEAD is now at 554a828 commit master 2
 
 此时 Git 会将当前 `master` 分支的源文件释放到 `../fix-bug-on-master` 文件夹里，而我们当前分支以及刚刚做的所有修改都不变。相当于我们手动切换到了 `..` 文件夹，然后将仓库克隆到了 `fix-bug-on-master` 文件夹里。
 
-此时我们可以通过 `cd ../fix-bug-on-master` 来切换文件夹，开始 bug 的修复工作，最后进行 commit。当我们完成工作后，我们可以直接删除此文件夹，并运行 `git worktree remove ./haha` 来移除这个 working tree。我们可以在一个仓库的文件夹里通过 `git worktree list` 来查看当前仓库以及相关的 working tree 列表。
+此时我们可以通过 `cd ../fix-bug-on-master` 来切换文件夹，开始 bug 的修复工作，最后进行 commit。当我们完成工作后，我们可以直接删除此文件夹，并运行 `git worktree remove ./fix-bug-on-master` 来移除这个 working tree。我们可以在一个仓库的文件夹里通过 `git worktree list` 来查看当前仓库以及相关的 working tree 列表。
 
 对比使用 `stash`，虽然 `worktree` 在使用上更加麻烦，但是它为我们在不同分支和修改之间提供了良好的隔离性，让我们可以同时在不同分支对应的仓库目录里进行工作。究竟应该使用哪个应当取决于我们遇到的实际问题。如果在切换分支时不希望对当前的源文件进行改变，那么我们往往需要使用 `worktree`，否则使用简单的 `stash` 就能满足我们的需要。
