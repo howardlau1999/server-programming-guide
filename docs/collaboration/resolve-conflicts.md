@@ -339,7 +339,3 @@ pick e4846ad commit a 4
 
 ???+info
     `git merge` 也有一个叫做 `--squash` 选项，它的作用是将目标分支的所有新的 commit 合并为一个融合 commit 并放到当前分支上，但**不会对目标分支做任何修改。**
-
-### `stash` 与 `worktree` 的使用
-
-参见[《Git stash 与 working trees 的使用》](stash-and-worktree.md)。
