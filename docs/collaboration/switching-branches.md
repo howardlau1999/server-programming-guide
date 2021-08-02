@@ -87,3 +87,36 @@ HEAD is now at 554a828 commit master 2
 此时我们可以通过 `cd ../fix-bug-on-master` 来切换文件夹，开始 bug 的修复工作，最后进行 commit。当我们完成工作后，我们可以直接删除此文件夹，并运行 `git worktree remove ./fix-bug-on-master` 来移除这个 working tree。我们可以在一个仓库的文件夹里通过 `git worktree list` 来查看当前仓库以及相关的 working tree 列表。
 
 对比使用 `stash`，虽然 `worktree` 在使用上更加麻烦，但是它为我们在不同分支和修改之间提供了良好的隔离性，让我们可以同时在不同分支对应的仓库目录里进行工作。究竟应该使用哪个应当取决于我们遇到的实际问题。如果在切换分支时不希望对当前的源文件进行改变，那么我们往往需要使用 `worktree`，否则使用简单的 `stash` 就能满足我们的需要。
+
+## working trees 与 clone
+
+我们在上文说过，创建一个 working tree 相当于将源仓库克隆到了一个新的空文件夹里。也就是说，下面的两条命令都可以让我们得到一个新的文件夹，在这个文件夹里，我们有 `a` 分支对应的源代码：
+
+```
+$ git worktree add ../branch-a a
+$ git clone -b a <URL> ../branch-a
+```
+
+即使在结果类似的情况下，我们依然建议使用 working trees 而不是 clone。原因如下文所说。注意我们仍然使用上面的 `a` 分支与 `master` 分支的例子。
+
+对于一个存放 Git 仓库的文件夹而言，**它实际占用的磁盘空间并不仅仅是各种源代码文件的占用空间，还包括 `.git` 文件夹里面的各种文件的占用**。特别是 `.git/objects` 文件夹里存放的各种 blob 文件。例如，对于一个中大型的前端项目仓库文件夹来说，它占用磁盘空间大约 `10G`，其中仅 `.git` 文件夹就占用了 `3G`。
+
+???+info
+    `.git/objects` 里面的 blob 文件是什么？它们其实是压缩后的 commit 信息、源文件等。从某种意义上来说 Git 是一个键值存储软件，其中的“值”就被存放在这些 blob 文件中。如果你想了解 Git 的这些内部原理，请参考官方文档中的[《Git Internals - Git Objects》](https://git-scm.com/book/en/v2/Git-Internals-Git-Objects)。
+
+如果我们使用 `clone` 来得到一个切换到另一个分支的仓库文件夹，对于小项目来说尚可接受，但对于上述但中大型项目来说则会产生极大的磁盘占用。与之产生鲜明对比的是 `worktree`，它**会在产生的新文件夹里复用原来的仓库的 `.git` 文件夹**。你会发现在得到的新文件夹里，`.git` 是一个文件而不是文件夹，内容如下：
+
+```
+gitdir: /原来的仓库文件夹路径/.git/worktrees/a
+```
+
+`worktree` 产生的新仓库实际上指向了原来的仓库。它们会共用一个 `.git` 文件夹，大大减少了整体的磁盘占用。同时，`worktree` 创建的文件夹与源文件夹共享 `.git` 文件夹，这使得我们只需在其中一个文件夹里进行 `git fetch` 来获得远端的更新，并对本地的分支进行更新等操作，避免了在两个文件夹里重复地运行 `git fetch` 等命令。
+
+???+info
+    如果你在新的文件夹里输入 `git checkout master`，你会得到以下的错误提示：
+
+    ```
+    fatal: 'master' is already checked out at '/原来的仓库文件夹路径'
+    ```
+
+    Git 告诉我们 `master` 分支已经出现在原来的文件夹里，不能再切换。这进一步说明了通过 `worktree` 命令建立的文件夹和源文件夹的紧密关系，不允许切换到同一个分支是因为可能会导致修改的冲突。
