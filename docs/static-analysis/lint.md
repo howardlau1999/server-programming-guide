@@ -49,3 +49,5 @@ Total errors found: 2
 ```
 
 那么最后的错误报告就不会报告关于 copyright 的规则。
+
+## `clang-tidy`
