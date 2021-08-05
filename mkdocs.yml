@@ -71,6 +71,8 @@ nav:
     - CMake: "meta-build-system/cmake.md"
     - GN: "meta-build-system/gn.md"
     - 在项目中使用第三方库: "meta-build-system/third-party-library.md"
+  - 代码生成:
+    - 概览: "codegen/index.md"
   - 编写测试:
     - 概览: "testing/index.md"
     - "使用 Google Test 进行测试": "testing/googletest.md"
