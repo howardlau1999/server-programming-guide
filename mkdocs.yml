@@ -130,5 +130,5 @@ nav:
     - 概览: "collaboration/index.md"
     - 解决代码合并冲突: "collaboration/resolve-conflicts.md"
     - 高效地处理分支切换: "collaboration/switching-branches.md"
-    - "fork 与多 origin": "collaboration/fork-and-multi-origins.md"
+    - "fork 与多远端仓库下的协作": "collaboration/fork-and-multi-remote-repositories.md"
   
