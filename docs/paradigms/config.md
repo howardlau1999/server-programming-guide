@@ -77,6 +77,53 @@ int main(int argc, char *argv[]) {
 
 除了命令行，我们还可以使用环境变量来配置程序。`#!cpp boost::program_options` 同样提供了解析环境变量的功能。
 
+```cpp hl_lines="7-13 29"
+#include <boost/program_options.hpp>
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+std::string mapper(std::string env_var) {
+  std::transform(env_var.begin(), env_var.end(), env_var.begin(), ::toupper);
+
+  if (env_var == "PORT")
+    return "port";
+  return "";
+}
+
+int main(int argc, char *argv[]) {
+  namespace po = boost::program_options;
+  po::options_description desc("MyServer 1.0");
+  desc.add_options()("help", "Show usage")
+      ("id", po::value<string>()->required(), "id of this server")
+      ("port", po::value<int>()->value_name("port"),
+        "listen on which port")
+      ("host",
+        po::value<string>()->value_name("host")->default_value(
+            "127.0.0.1"),
+        "bind to which address");
+
+  po::variables_map vm;
+  po::store(po::parse_command_line(argc, argv, desc), vm);
+  po::store(po::parse_environment(desc, boost::function1<std::string, std::string>(mapper)), vm);
+  po::notify(vm);
+
+  if (vm.count("help")) {
+    cout << desc << "\n";
+    return 1;
+  }
+
+  if (vm.count("port")) {
+    cout << "port was set to " << vm["port"].as<int>() << ".\n";
+  } else {
+    cout << "port was not set.\n";
+  }
+
+  return 0;
+}
+```
+
 ???+note "使用 `getenv` 函数"
     `getenv` 函数是 C 标准库 `stdlib.h` 中的一个函数，是跨平台的，如果不想引入其他库，使用这个函数也是可以的。
 
@@ -93,3 +140,50 @@ int main(int argc, char *argv[]) {
 
 如果没有特殊需求，一般采用现成的格式即可。使用现成的格式还有一个好处，那就是不需要自己编写解析库，可以使用现成的解析库。不同生态使用的配置文件格式有不同偏好，例如 `Go` 语言和 `Rust` 语言喜欢用 `toml` 格式。对于人类而言，`toml` 以及 `ini` 格式比较容易写，`yaml` 通过缩进来指示嵌套容易在复制粘贴时出错，而 `json` 需要匹配括号比较麻烦。`#!cpp boost::program_options` 支持从文件读取类似 `ini` 的配置。
 
+```cpp hl_lines="30"
+#include <boost/program_options.hpp>
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+std::string mapper(std::string env_var) {
+  std::transform(env_var.begin(), env_var.end(), env_var.begin(), ::toupper);
+
+  if (env_var == "PORT")
+    return "port";
+  return "";
+}
+
+int main(int argc, char *argv[]) {
+  namespace po = boost::program_options;
+  po::options_description desc("MyServer 1.0");
+  desc.add_options()("help", "Show usage")
+      ("id", po::value<string>()->required(), "id of this server")
+      ("port", po::value<int>()->value_name("port"),
+        "listen on which port")
+      ("host",
+        po::value<string>()->value_name("host")->default_value(
+            "127.0.0.1"),
+        "bind to which address");
+
+  po::variables_map vm;
+  po::store(po::parse_command_line(argc, argv, desc), vm);
+  po::store(po::parse_environment(desc, boost::function1<std::string, std::string>(mapper)), vm);
+  po::store(po::parse_config_file("config.ini", desc), vm);
+  po::notify(vm);
+
+  if (vm.count("help")) {
+    cout << desc << "\n";
+    return 1;
+  }
+
+  if (vm.count("port")) {
+    cout << "port was set to " << vm["port"].as<int>() << ".\n";
+  } else {
+    cout << "port was not set.\n";
+  }
+
+  return 0;
+}
+```
