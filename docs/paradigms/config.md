@@ -32,6 +32,44 @@
 
 下面以 `#!cpp boost::program_options` 为例，演示如何使用现成的库来解析命令行参数并使用。
 
+```cpp
+#include <boost/program_options.hpp>
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+int main(int argc, char *argv[]) {
+  namespace po = boost::program_options;
+  po::options_description desc("MyServer 1.0");
+  desc.add_options()("help", "Show usage")
+      ("id", po::value<string>()->required(), "id of this server")
+      ("port", po::value<int>()->value_name("port"),
+        "listen on which port")
+      ("host",
+        po::value<string>()->value_name("host")->default_value(
+            "127.0.0.1"),
+        "bind to which address");
+
+  po::variables_map vm;
+  po::store(po::parse_command_line(argc, argv, desc), vm);
+  po::notify(vm);
+
+  if (vm.count("help")) {
+    cout << desc << "\n";
+    return 1;
+  }
+
+  if (vm.count("port")) {
+    cout << "port was set to " << vm["port"].as<int>() << ".\n";
+  } else {
+    cout << "port was not set.\n";
+  }
+
+  return 0;
+}
+```
+
 ???+note "为什么不使用 `getopt`"
     `getopt` 函数同样提供了一定的命令行解析功能，但只在 Linux 上可用，为了更好的跨平台性，尽量使用其他的库函数。
 
