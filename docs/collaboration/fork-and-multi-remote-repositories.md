@@ -71,9 +71,15 @@ From github.com:MultiMC/MultiMC5
 
 ## 检查他人的 Pull request
 
-假如我们是开源项目的作者，有人向我们发来了一个 Pull request。在这个 PR 里，他声称帮助我们实现了一些新功能，或者修复了一些 bug。要验证他的说法，我们很有可能需要得到他修改的分支对应的源码，然后进行需要的一些步骤，例如编译运行，手动测试等。
+假如我们是开源项目的作者，有人向我们发来了一个 Pull request。在这个 PR 里，他声称帮助我们实现了一些新功能，或者修复了一些 bug。要验证他的说法，我们很有可能需要得到他修改的分支对应的源码，然后进行需要的一些步骤，例如编译运行，手动测试等。我们有两种方法来得到 Pull request 对应的源码。
 
-要做到这样的事情，我们需要修改本地仓库的 `.git/config` 文件，在 `[remote "origin"]` 栏目下添加新的一行：
+## 直接 fetch 对应的 Pull request
+
+像 GitHub 这样的平台支持直接在本地仓库运行 `git fetch origin pull/ID/head:BRANCHNAME` 来将编号为 `ID` 的 Pull request 对应的分支拉取到本地名为 `BRANCHNAME` 的分支上。
+
+### 添加 Refspec
+
+我们需要修改本地仓库的 `.git/config` 文件，在 `[remote "origin"]` 栏目下添加新的一行：
 
 ```
 fetch = +refs/pull/*/head:refs/pull/origin/*
@@ -106,3 +112,6 @@ From github.com:AfoninZ/MultiMC5-Cracked
 ```
 
 我们拉取了此仓库的所有 Pull request 对应的分支，其中的数字就是 Pull request 的编号。如果我们想要检查编号为 `11` 的 Pull request，可以运行以下命令：`git checkout -b pr-11 pull/origin/11` 来切换到对应的分支。
+
+???+warning
+    `refs/pull` 目录下的文件都是只读的，这意味着无论我们使用的是方法一还是方法二，在切换到 `pr-11` 分支之后都无法直接进行 `push`。不过我们仍然可以通过 `git push origin NAME` 来将当前分支推送到远端仓库里一个新的叫做 `NAME` 的分支上。
