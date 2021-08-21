@@ -94,29 +94,29 @@ terminate called without an active exception
 
 为了完成线程之间的交流，有一种办法是共享内存。它利用了一个事实：由同一个进程产生的不同线程，共享了原进程的内存空间。这意味着一个线程能够访问的变量，大部分也能够被另一个线程所访问。下面我们展示一段实现了上述软件功能的代码：
 
-    === "bad_case.cpp"
+=== "bad_case.cpp"
 
-        ```cpp
-        int list[100];  // 用来存储用户输入的数据，每一份数据用 int 表示
-        int index = -1; // 用 index 指向当前还没有被处理的数据
+    ```cpp
+    int list[100];  // 用来存储用户输入的数据，每一份数据用 int 表示
+    int index = -1; // 用 index 指向当前还没有被处理的数据
 
-        void producer() {
-            while (true) {
-                // 这里忽略对 list 是否饱和的检查
-                // 下面获取用户输入的数据并写入 list 中，如果用户
-                // 没有输入那么线程就会卡在 read_data() 调用内部而不会返回
-                list[index + 1] = read_data(); 
-                index++;
-            }
+    void producer() {
+        while (true) {
+            // 这里忽略对 list 是否饱和的检查
+            // 下面获取用户输入的数据并写入 list 中，如果用户
+            // 没有输入那么线程就会卡在 read_data() 调用内部而不会返回
+            list[index + 1] = read_data(); 
+            index++;
         }
+    }
 
-        void consumer() {
-            while (index >= 0) {
-                int data = list[index--]; // 从 list 中拿到数据
-                do_calculate(data);
-            }
+    void consumer() {
+        while (index >= 0) {
+            int data = list[index--]; // 从 list 中拿到数据
+            do_calculate(data);
         }
-        ```
+    }
+    ```
 
 上述代码看上去似乎可以正常工作，然而真正运行的时候我们很可能看到一些错误的现象，例如用户输入了一份数据，结果两个消费者线程都拿到了这个数据，重复地对数据进行了计算。又如，用户输入了新的一份数据之后，始终没有等到消费者线程的输出。还有可能我们的程序会在输入数据后直接崩溃（访问了无效的数组下标）。这段代码充满了问题！
 
@@ -135,34 +135,34 @@ terminate called without an active exception
 
 === "bad_case.cpp"
 
-        ```cpp hl_lines="9 12 18 21"
-        int list[100];  // 用来存储用户输入的数据，每一份数据用 int 表示
-        int index = -1; // 用 index 指向当前还没有被处理的数据
-        std::mutex m;
+    ```cpp hl_lines="9 12 18 21"
+    int list[100];  // 用来存储用户输入的数据，每一份数据用 int 表示
+    int index = -1; // 用 index 指向当前还没有被处理的数据
+    std::mutex m;
 
-        void producer() {
-            while (true) {
-                // 把会阻塞线程运行的操作单独放出来
-                int data = read_data();
-                m.lock();
-                list[index + 1] = data; 
-                index++;
-                m.unlock();
-            }
+    void producer() {
+        while (true) {
+            // 把会阻塞线程运行的操作单独放出来
+            int data = read_data();
+            m.lock();
+            list[index + 1] = data; 
+            index++;
+            m.unlock();
         }
+    }
 
-        void consumer() {
-            while (true) {
-                m.lock();
-                if (index < 0) continue; // 没有新数据时直接跳过本次循环
-                int data = list[index--];
-                m.unlock();
-                // 下面复杂的计算不需要访问 list 和 index
-                // 因此不会出现竞态条件
-                do_calculate(data);
-            }
+    void consumer() {
+        while (true) {
+            m.lock();
+            if (index < 0) continue; // 没有新数据时直接跳过本次循环
+            int data = list[index--];
+            m.unlock();
+            // 下面复杂的计算不需要访问 list 和 index
+            // 因此不会出现竞态条件
+            do_calculate(data);
         }
-        ```
+    }
+    ```
 
 对互斥量进行 `lock()` 操作是在尝试获得一个“独享权”，一旦当前线程获得了这个权利，其他线程在调用 `lock()` 时就无法获得这种权利，一直被阻塞无法进行下一步操作。直到拿到了权利的线程通过 `unlock()` 放弃权利之后，被阻塞的线程们又会进入下一轮争夺。由此，我们通过使用互斥量，在 `lock()` 和 `unlock()` 的代码之间确保了：**在任意时间点，最多只有一个线程会访问 `list` 和 `index`，竞态条件不复存在**。
 
