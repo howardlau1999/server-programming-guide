@@ -82,9 +82,9 @@ terminate called without an active exception
         }
         ```
 
-    根据 [cppreference.com](https://en.cppreference.com/w/cpp/thread/thread/thread#Notes)，我们需要在传入引用时使用 `#!cpp std::ref` 来包裹变量名，即将上面代码的 `#!cpp std::thread` 构造函数调用中的参数 `value` 改为 `!#cpp std::ref(value)`。
+    根据 [cppreference.com](https://en.cppreference.com/w/cpp/thread/thread/thread#Notes)，我们需要在传入引用时使用 `std::ref` 来包裹变量名，即将上面代码的 `#!cpp std::thread` 构造函数调用中的参数 `value` 改为 `std::ref(value)`。
 
-    当函数需要常量引用时，我们也可以使用 `#!cpp std::cref`。
+    当函数需要常量引用时，我们也可以使用 `std::cref`。
 
 ## 线程间共享内存
 
