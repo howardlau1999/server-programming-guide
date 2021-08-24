@@ -111,6 +111,16 @@ nav:
     - "使用 RPC 框架": "rpc/framework.md"
     - 编写服务端: "rpc/server.md"
     - 编写客户端: "rpc/client.md"
+  - 存储系统:
+    - 概览: "storage/index.md"
+    - 存储模型:
+      - "键值对 KV 存储": "storage/kv.md"
+      - 关系型数据库: "storage/rdbms.md"
+      - 其他存储模型: "storage/custom.md"
+    - 存储位置:
+      - 本地存储: "storage/local.md"
+      - 远程存储: "storage/remote.md"
+      - 分布式存储: "storage/distributed.md" 
   - 服务器程序常见范式:
     - 概览: "paradigms/index.md"
     - 程序的运行配置: "paradigms/config.md"
