@@ -137,9 +137,9 @@ terminate called without an active exception
 
 === "with_mutex.cpp"
 
-    ```cpp hl_lines="9 12 18 21"
-    int list[100];  // 用来存储用户输入的数据，每一份数据用 int 表示
-    int index = -1; // 用 index 指向当前还没有被处理的数据
+    ```cpp hl_lines="9 12 18 20 24"
+    int list[100];  // 用来存储用户输入的数据，每一份数据用 `int` 表示
+    int index = -1; // 用 `index` 指向当前还没有被处理的数据
     std::mutex m;
 
     void producer() {
@@ -156,10 +156,13 @@ terminate called without an active exception
     void consumer() {
         while (true) {
             m.lock();
-            if (index < 0) continue; // 没有新数据时直接跳过本次循环
+            if (index < 0) {
+                m.unlock(); // 在使用 `continue` 和 `break` 语句时非常容易忘记进行 `unlock()`
+                continue;   // 没有新数据时直接跳过本次循环
+            }
             int data = list[index--];
             m.unlock();
-            // 下面复杂的计算不需要访问 list 和 index
+            // 下面复杂的计算不需要访问 `index`
             // 因此不会出现竞态条件
             do_calculate(data);
         }
@@ -181,16 +184,23 @@ terminate called without an active exception
     为了解决这个问题，人们发明了另一种互斥量，这种互斥量在无法拿到锁时会进入类似 `while(true)` 的死循环，而不是休眠当前线程。这种互斥量也被称为“自旋锁”。
 
 ???+warning
-    千万不要忘记调用 `unlock()`。假如我们在上面的 `producer()` 函数里漏掉了 `m.unlock()`，那么我们会在之后的循环里又一次调用 `m.lock()`，**这对 C++ 来说是未定义行为（undefined behavior），导致一些无法预料的负面后果，我们的程序可能会直接崩溃。**为此，我们建议使用 `std::scoped_lock`，它在构造函数中自动调用 `lock()`，并在析构函数中自动调用 `unlock()`，是 C++ 的 RAII 思想的实践之一。我们可以把 `producer()` 的代码修改为如下所示：
+    千万不要忘记调用 `unlock()`！特别是当我们在循环中使用了 `continue` 或者 `break` 时，我们很容易忘记在其之前进行 `unlock()`。
+    
+    假如我们在上面的 `consumer()` 函数里漏掉了 `m.unlock()`，那么我们会在之后的循环里又一次调用 `m.lock()`，**这对 C++ 来说是未定义行为（undefined behavior），会导致一些无法预料的负面后果，我们的程序可能会直接崩溃。**
+    
+    为此，我们建议使用 `std::scoped_lock`，它在构造函数中自动调用 `lock()`，并在析构函数中自动调用 `unlock()`，是 C++ 的 RAII 思想的实践之一。我们可以把 `consumer()` 的代码修改为如下所示：
 
-    ```cpp hl_lines="4"
-    void producer() {
+    ```cpp hl_lines="55555"
+    void consumer() {
+        int data = -1;
         while (true) {
-            int data = read_data();
-            std::scoped_lock lock(m); // 构造函数自动调用 `m.lock()`
-            list[index + 1] = data; 
-            index++; 
-        } // 一次循环结束之后，`lock` 会被调用析构函数，自动进行 `m.unlock()` 的调用
+            {
+                std::scoped_lock lock(m); // 构造函数自动调用 `m.lock()`
+                if (index < 0) continue;  // 离开本次循环时，`lock` 的析构函数会被执行
+                data = list[index--];
+            } // 离开本代码块时，`lock` 的析构函数也会被执行
+            do_calculate(data);
+        }
     }
     ```
 
@@ -210,9 +220,9 @@ terminate called without an active exception
     }
     ```
 
-    在这种有歧义的语法下，遵守的规则是：**如果一条语句看上去是声明，那么它就是声明。**也就是说实际上如果不给对象起名字的话，上面的代码实际上会按照**第二种**理解去编译。在这种情况下，互斥量根本没有上锁。
+    在这种有歧义的语法下，C++ 会遵守的规则是：**如果一条语句看上去是声明，那么它就是声明。**也就是说实际上如果不给对象起名字的话，上面的代码实际上会按照**第二种**理解去编译。在这种情况下，互斥量根本没有上锁。
 
 
 ### 原子量
 
-除了使用互斥量来解决竞态条件问题，人们也发明了另一种方法：**原子量（atomic variables）。**正如我们在上文所说，
+除了使用互斥量来解决竞态条件问题，人们也发明了另一种方法：**原子量（atomic variables）。**我们在上文介绍过竞态条件的产生源于多个线程执行的相对顺序无法确定
