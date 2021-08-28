@@ -116,6 +116,7 @@ nav:
     - 存储模型:
       - "键值对 KV 存储": "storage/kv.md"
       - 关系型数据库: "storage/rdbms.md"
+      - 对象存储: "storage/object-storage.md"
       - 其他存储模型: "storage/custom.md"
     - 存储位置:
       - 本地存储: "storage/local.md"
