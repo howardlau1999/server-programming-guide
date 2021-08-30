@@ -247,16 +247,35 @@ terminate called without an active exception
     void consumer() {
         while (true) {
             int i = index;
+            if (i < 0) continue;
             while (!index.compare_exchange_weak(i, i - 1)) {
                if (i < 0) break;
             }
             if (i < 0) continue;
-            int data = list[i];
-            do_calculate(data);
+            do_calculate(list[i]);
         }
     }
     ```
     
 上面的代码看上去比互斥量要稍微复杂一些，我们先来看看其中 `fetch_add()` 函数和 `compare_exchange_weak()` 函数的使用：
 
-`fetch_add()` 函数的作用是：原子地获取 `index` 的值，然后将它加一，再存入 `index` 中，而且整个过程是原子的，也就是说不会有其它线程对 `index` 的访问穿插
+`fetch_add()` 函数的作用是：原子地获取 `index` 的值，然后将它加一，再存入 `index` 中。这整个过程是原子的，不会有其它线程对 `index` 的访问穿插在这几步之间，导致数据竞争的出现。
+
+`compare_exchange_weak()` 函数的作用是：比较原子量当前的值和给定的值（第一个参数），如果相等则将原子量的值设为第二个参数的值并返回 `true`；如果不相等则将第一个参数的值设为原子量的值，并返回 `false`。此函数做的事情也是原子的。
+
+`producer()` 中对于 `fetch_add()` 的使用很容易理解，`index.fetch_add(1)` 其实就是普通变量里 `i++` 的原子量版本。
+
+但 `consumer()` 中的逻辑则要复杂一些了。我们首先使用 `int i = index;` 将原子量当前的值读入本地变量 `i` 里，然后我们准备对它进行减一操作，然后消费新的数据。不过事情并没有这么简单。**在读取 `index` 到修改 `index` 之间，有可能另一个线程也做了同样的事情，导致数据竞争的出现。**为此，C++ STL 为原子量提供了一个功能强大的 `compare_exchange_weak()` 函数，用来给当前函数检查**是否有其他线程先于自己一步完成了对原子量的修改。**
+
+举个例子，假如现在 `producer()` 将 `index` 的值设为了 `0`，有两个消费者线程 A 和 B 都进行了 `int i = index`，读到了 `i` 均为 `0`。此时，A 进行 `compare_exchange_weak()` 函数，将 `index` 的值设为了 `i - 1` 也就是 `-1`，并调出了循环，成功地消费了此数据。B 在进行相同函数时，发现 `index` 当前的值已经不再等于它先前拿到的 `i` 了，于是 `i` 被设置为 `i - 1`，也就是 `-1`，并先后经过 `break` 和 `continue` 重新开始新一轮消费循环。
+
+通过引入原子量，我们在多个并发线程对 `index` 的访问之间引入了对访问顺序的约束，避免了数据竞争的产生。经验表明，在很多场景下使用原子量的性能一般会好于使用互斥量的性能，不过这个问题非常复杂，也有很多相反的情况。它们的性能和程序代码的写法、编译器、操作系统、CPU 架构等因素都有关系，不过这些已经超出了本文的讨论范围，如果你i有兴趣可以自行查阅相关资料。
+
+???+info
+    `compare_exchange_weak()` 是 C++ 11 STL 提供的 CAS（compare and set）操作的实现之一，另一个实现是 `compare_exchange_strong()`，二者的区别在于：前者一般会用在 `while` 循环里，因为此函数有可能会出现“假阴性”现象，也就是第一个参数的值和原子量的值明明一样，函数却返回了 `false`（但不会修改第一个参数的值）。之所以有这种现象是为了更好的性能考虑。后者则不会有这种现象，因此不需要用在循环里，但是相对应的性能就会差一些。
+    
+???+info
+    原子量提供的这些函数都可以接收额外的 `memory_order` 参数，它是 C++ 提供给程序员来指示编译器对代码的重排程度的标识。在上面的例子里，我们其实可以使用 `memory_order_consume` 和 `memory_order_acquire` 来进一步提升原子量访问的性能。更多有关 Memory order 的话题已经超出了本文的讨论范围，相关资料可以查阅 [cppreference.com](http://www.cplusplus.com/reference/atomic/memory_order/)。
+    
+### 条件变量
+
