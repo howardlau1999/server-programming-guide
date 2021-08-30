@@ -138,8 +138,10 @@ nav:
     - "systemd 部署": "deployment/systemd.md"
     - "Docker 部署": "deployment/docker.md"
   - 与他人合作:
-    - 概览: "collaboration/index.md"
-    - 解决代码合并冲突: "collaboration/resolve-conflicts.md"
-    - 高效地处理分支切换: "collaboration/switching-branches.md"
-    - "fork 与多远端仓库下的协作": "collaboration/fork-and-multi-remote-repositories.md"
+    - 快速上手项目: "collaboration/getting-started-on-a-project.md"
+    - "实际的 Git 场景":
+      - 概览: "collaboration/index.md"
+      - 解决代码合并冲突: "collaboration/resolve-conflicts.md"
+      - 高效地处理分支切换: "collaboration/switching-branches.md"
+      - "fork 与多远端仓库下的协作": "collaboration/fork-and-multi-remote-repositories.md"
   
