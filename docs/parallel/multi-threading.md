@@ -86,7 +86,7 @@ terminate called without an active exception
 
     当函数需要常量引用时，我们也可以使用 `std::cref`。
 
-## 线程间共享同步
+## 线程间同步
 
 在很多场景下，不同的线程之间需要传递信息以达成某种协作关系。
 
