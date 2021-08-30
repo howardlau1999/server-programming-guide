@@ -190,7 +190,7 @@ terminate called without an active exception
     
     为此，我们建议使用 `std::scoped_lock`，它在构造函数中自动调用 `lock()`，并在析构函数中自动调用 `unlock()`，是 C++ 的 RAII 思想的实践之一。我们可以把 `consumer()` 的代码修改为如下所示：
 
-    ```cpp hl_lines="55555"
+    ```cpp hl_lines="5"
     void consumer() {
         int data = -1;
         while (true) {
@@ -225,4 +225,38 @@ terminate called without an active exception
 
 ### 原子量
 
-除了使用互斥量来解决竞态条件问题，人们也发明了另一种方法：**原子量（atomic variables）。**我们在上文介绍过竞态条件的产生源于多个线程执行的相对顺序无法确定
+我们在上文介绍过竞态条件的产生源于多个线程执行的相对顺序无法确定，使用互斥量可以确保在任意时候临界区最多只有一个线程在访问，进而就能够约束线程的执行顺序，以此来解决竞态条件问题。不过，能够约束线程执行顺序的还有另一种方法：**原子量（atomic variables）。**
+
+原子量从英文名就能看出，它本质上是作为一种变量来供人们使用，但它却有一个很明显的特性：原子性。在 C++ 中，原子性的含义是：**多个并发线程访问具有原子性的对象时不会造成数据竞争，也不会导致未定义行为。**相比起互斥量，原子量使用另一种截然不同的思路去约束线程执行的顺序。
+
+如果将上述使用互斥量的例子改为使用原子量，我们可以将线程竞争访问的 `index` 变量改为原子变量：
+
+=== "with_mutex.cpp"
+
+    ```cpp hl_lines="2"
+    int list[100];
+    std::atomic_int index = -1; // 使用原子量作为 `index`
+
+    void producer() {
+        while (true) {
+            int data = read_data();
+            list[1 + index.fetch_add(1)] = data; 
+        }
+    }
+
+    void consumer() {
+        while (true) {
+            int i = index;
+            while (!index.compare_exchange_weak(i, i - 1)) {
+               if (i < 0) break;
+            }
+            if (i < 0) continue;
+            int data = list[i];
+            do_calculate(data);
+        }
+    }
+    ```
+    
+上面的代码看上去比互斥量要稍微复杂一些，我们先来看看其中 `fetch_add()` 函数和 `compare_exchange_weak()` 函数的使用：
+
+`fetch_add()` 函数的作用是：原子地获取 `index` 的值，然后将它加一，再存入 `index` 中，而且整个过程是原子的，也就是说不会有其它线程对 `index` 的访问穿插
