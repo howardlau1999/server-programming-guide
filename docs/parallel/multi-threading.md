@@ -289,7 +289,7 @@ terminate called without an active exception
 
 === "with_cv.cpp"
 
-    ```cpp hl_lines="4 13 22"
+    ```cpp hl_lines="4 14 23"
     int list[100];
     int index = -1;
     std::mutex m;
