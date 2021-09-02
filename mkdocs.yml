@@ -123,12 +123,14 @@ nav:
       - 远程存储: "storage/remote.md"
       - 分布式存储: "storage/distributed.md" 
   - 服务器程序常见范式:
-    - 概览: "paradigms/index.md"
-    - 程序的运行配置: "paradigms/config.md"
-    - 控制反转: "paradigms/ioc.md"
-    - 注册请求处理器: "paradigms/handlers.md"
-    - 启动后台服务: "paradigms/background.md"
-    - 创建监听端口监听请求: "paradigms/listen.md"
+    - 系统设计范式: "paradigms/system-design.md"
+    - 编程范式:
+      - 概览: "paradigms/index.md"
+      - 程序的运行配置: "paradigms/config.md"
+      - 控制反转: "paradigms/ioc.md"
+      - 注册请求处理器: "paradigms/handlers.md"
+      - 启动后台服务: "paradigms/background.md"
+      - 创建监听端口监听请求: "paradigms/listen.md"
   - 编写文档:
     - 概览: "documentation/index.md"
   - 部署上线: 
