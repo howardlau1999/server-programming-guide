@@ -75,6 +75,7 @@ nav:
     - 概览: "codegen/index.md"
   - 编写测试:
     - 概览: "testing/index.md"
+    - "使用 diff 进行测试": "testing/diff.md"
     - "使用 Google Test 进行测试": "testing/googletest.md"
   - 代码静态分析:
     - 概览: "static-analysis/index.md"
