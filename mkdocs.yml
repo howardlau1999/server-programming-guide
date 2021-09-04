@@ -69,6 +69,7 @@ nav:
     - 概览: "meta-build-system/index.md"
     - Autotools: "meta-build-system/autotools.md"
     - CMake: "meta-build-system/cmake.md"
+    - XMake: "meta-build-system/xmake.md"
     - GN: "meta-build-system/gn.md"
     - 在项目中使用第三方库: "meta-build-system/third-party-library.md"
   - 代码生成:
