@@ -89,6 +89,7 @@ nav:
     - 概览: "logging/index.md"
   - 指标系统:
     - 概览: "metrics/index.md"
+    - "使用 Prometheus 指标库": "metrics/prometheus.md"
   - 调试工具:
     - 概览: "debugging/index.md"
     - "gdb 调试工具": "debugging/gdb.md"
