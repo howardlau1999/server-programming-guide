@@ -87,6 +87,7 @@ nav:
     - "使用 Github Actions 进行持续集成": "ci/github-actions.md"
   - 日志系统:
     - 概览: "logging/index.md"
+    - "使用 Boost.Log": "logging/boost.md"
   - 指标系统:
     - 概览: "metrics/index.md"
     - "使用 Prometheus 指标库": "metrics/prometheus.md"
