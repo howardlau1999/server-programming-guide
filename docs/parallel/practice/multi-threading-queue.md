@@ -39,17 +39,19 @@ public:
         q.push(std::move(element));
     }
 
-    void pop(T& element) {
-        if (!empty()) {
-            std::scoped_lock lock(m);
+    bool pop(T& element) {
+        std::scoped_lock lock(m);
+        if (!q.empty()) {
             element = q.front();
             q.pop();
+            return true;
         }
+        return false;
     }
 };
 ```
 
-在上面的例子中，我们在各个函数中访问 `std::queue<T>` 对象之前都使用互斥量来确保了竞态条件不会发生，实现了一个带有基本功能的线程安全队列。虽然我们的实现基于具有一定异常安全性的 `std::queue<T>`，但是在包装的过程中有可能会引入一些新的破坏了异常安全性的地方。我们不妨对三个函数稍作检查。
+在上面的例子中，我们在各个函数中访问 `std::queue` 对象之前都使用互斥量来确保了竞态条件不会发生，实现了一个带有基本功能的线程安全队列。虽然我们的实现基于具有一定异常安全性的 `std::queue`，但是在包装的过程中有可能会引入一些新的破坏了异常安全性的地方。我们不妨对三个函数稍作检查。
 
 * `empty()` 函数是异常安全的。`std::scoped_lock` 和 `std::mutex` 的 `lock()` 函数都提供了基本的异常安全保证，即在出现异常时互斥量仍处于有效状态，其他线程可以正常使用。
 
