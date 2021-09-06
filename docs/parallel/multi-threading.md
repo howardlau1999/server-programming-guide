@@ -131,6 +131,9 @@ terminate called without an active exception
 ???+info
     上述的例子准确来说应该叫做**数据竞争（data race）**，它只是竞态条件的其中一种，却也是计算机软件里最常见的种类之一。本文中的竞态条件指的都是数据竞争。
 
+???+note "使用 [ThreadSanitizer](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual) 检查数据竞争"
+    在编译时打开 `-fsanitize=thread` 选项，即可在程序运行的时候检查数据竞争问题。
+
 ### 互斥量
 
 为了在共享内存时避免竞态条件导致的错误结果，人们发明了许多手段。其中最简单的手段是使用互斥量（mutex）保护存在竞态条件的变量。将上文的代码片段修改为如下所示就能解决竞态条件导致的问题：
