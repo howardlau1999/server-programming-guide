@@ -16,7 +16,7 @@
 
 在 C++ 中实现这样的一个队列，至少存在两种方法：基于互斥量的方法和基于原子量的方法。为了简单起见，我们在本节中只介绍基于互斥量的方法。读者可以参考本节的内容自行设计一个基于原子量的队列。
 
-## 粗犷地使用互斥量的实现
+## 粗犷的实现
 
 C++ 的 STL 中已经提供了一个队列：`std::queue`，虽然它提供了一定的异常安全保证，但它不是线程安全的。要使用互斥量来让它变得线程安全，一个简单而粗犷的方式是使用互斥量包围暴露的所有函数：
 
@@ -67,9 +67,120 @@ public:
 
 经过分析，上述代码中实现的 `threadsafe_queue` 是一个基本实现了线程安全和异常安全的队列数据结构。但是它对锁的使用太过粗犷，并没有提供理想的并发访问能力。换句话说：在特定场景下我们可以允许更多的并发性，而不是限制同一时刻只有一个线程访问数据结构。我们不妨思考一个问题：**如果不加以保护，对 `push()` 和 `pop()` 的并发访问是否总会产生竞态条件？**
 
-假设我们的 `std::queue` 底层使用了 `std::list` 作为内部容器，在队列内部拥有一个具有*一定数量*节点的链表时，一对并发的 `push()` 和 `pop()` 调用并不会让队列操作同一个链表节点，因此不会出现竞态条件。**如果我们能够让队列尽可能细致地识别何时应该使用互斥量，何时不应该使用，那么我们就能够进一步提升队列的并发访问性能。**同时，每次持有锁的时间越短，也能进一步提升性能。
+假设我们的 `std::queue` 底层使用了 `std::list` 作为内部容器，在队列内部拥有一个具有*一定数量*节点的链表时，一对并发的 `push()` 和 `pop()` 调用并不会让队列操作同一个链表节点，因此不会出现竞态条件。**如果能让队列尽可能细致地知道何时应该使用互斥量、何时不应该使用，那么就能进一步提升并发访问性能了。**同时，每次持有锁的时间越短，也能进一步提升性能。
 
-为了打造具有更加精细的互斥量控制下的队列，我们接下来放弃对 `std::queue` 进行简单的包装，转而实现一个链表数据结构。
+为了打造具有更加精细的互斥量控制下的队列，我们接下来放弃对 `std::queue` 进行简单的包装，转而实现一个链表数据结构，在它的基础上使用巧妙的互斥量来实现尽可能高的并发访问性能。
+
+## 基于链表的细致实现
+
+为了方便理解，我们接下来会一步一步地构建出一个满足上述要求的队列。我们先来考虑一个非线程安全的实现：
+
+```cpp
+template<typename T>
+class queue {
+    struct node {
+        T element;
+        std::unique_ptr<node> next;
+
+        node(T element) : element(std::move(element)) {}
+    };
+
+    std::unique_ptr<node> head;
+    node* tail;
+
+public:
+    queue() : tail(nullptr) {}
+    // 为了简便，我们暂时不考虑拷贝构造和赋值
+    queue(const queue& other) = delete;
+    queue& operator=(const queue& other) = delete;
+
+    bool empty() {
+        return !head;
+    }
+
+    void push(T element) {
+        auto ptr = std::make_unique(std::move(element));
+        auto new_tail = ptr.get();
+        if (tail == nullptr)
+            head = std::move(ptr);
+        else
+            tail->next = std::move(ptr);
+        tail = new_tail;
+    }
+
+    std::shared_ptr<T> pop() {
+        if (!head)
+            return std::shared_ptr<T>();
+        auto res = std::make_shared(std::move(head->data));
+        auto old_head = std::move(head);
+        head = std::move(old_head->next);
+        if (!head)
+            tail = nullptr;
+        return res;
+    }
+};
+```
+
+在上面的例子里，我们使用 `std::unique_ptr` 来管理链表的节点存储，使用裸指针 `tail` 来指向尾节点。使用智能指针可以有效防止内存泄露的问题。这个例子并不是线程安全的，因为在队列里只有一个节点的时候，并发调用的 `push()` 和 `pop()` 有可能同时访问同一个节点的 `next` 指针，从而出现竞态条件。读者可能认为如果在两个函数里判断一下这种情况并加锁就能解决问题，就像下面这样：
+
+```cpp
+auto has_single_item = !empty() && head->get() == tail;
+auto lock = has_single_item ? std::scoped_lock(m) : std::scoped_lock();
+```
+
+不幸的是，这种解决方法是错误的。我们随便就能举一个能够绕过这种保护措施的例子：存在三个线程，其中两个进行 `pop()`，另一个进行 `push()`。假如队列里有两个元素，当三个线程都执行完 `has_single_item` 的运算时得到了 `false`，于是三个线程都不会去获得锁从而继续访问，竞态条件因此出现。
+
+除了对同一个节点进行 `push()` 和 `pop()` 可能导致的竞态条件，我们还要考虑并发访问同一个函数（`push()` 或者 `pop()`）的情况。这么考虑下来，我们最后写出的代码可能还不如一开始就对 `std::queue` 使用互斥量包装。
+
+要想真正地解决上述问题，我们需要转变思维。既然在节点数量为一的时候，并发的 `push()` 和 `pop()` 调用会造成竞态条件，那么我们可以引入一个空节点来让链表节点数量总是大于等于一。**这样在队列里只有一个数据时，链表会含有两个节点，此时并发的 `push()` 和 `pop()` 调用就不会造成竞态条件了。**请看下面的代码：
+
+```cpp hl_lines="26"
+template<typename T>
+class queue {
+    struct node {
+        std::shared_ptr<T> element;
+        std::unique_ptr<node> next;
+    };
+
+    std::unique_ptr<node> head;
+    node* tail;
+
+public:
+    queue() : head(std::make_unique()), tail(head.get()) {}
+    // 为了简便，我们暂时不考虑拷贝构造和赋值
+    queue(const queue& other) = delete;
+    queue& operator=(const queue& other) = delete;
+
+    bool empty() {
+        return head.get() == tail;
+    }
+
+    void push(T element) {
+        auto element_ptr = std::make_shared(std::move(element));
+        auto node_ptr = std::make_unique();
+        auto new_tail = node_ptr.get();
+        // 将当前尾节点的值设为 `element_ptr`，而新建的空节点 `node_ptr` 作为新的尾节点
+        tail->data = element_ptr;
+        tail->next = std::move(node_ptr);
+        tail = new_tail;
+    }
+
+    std::shared_ptr<T> pop() {
+        if (empty())
+            return std::shared_ptr<T>();
+        auto res = head->data;
+        auto old_head = std::move(head);
+        head = std::move(old_head->next);
+        return res;
+    }
+};
+```
+
+为了引入空节点的设定，我们将 `struct node` 里的 `element` 改为了 `std::shared_ptr`。这样对于空节点来说，智能指针内容就为空。然后，`empty()` 的判断依据改为了 `head.get() == tail`，因为在链表只有一个节点（也就是空节点）时我们认为队列为空。`pop()` 函数的改动不大，因为现在链表在 `pop()` 之后不可能为空，所以不需要额外的判断了。
+
+最值得讨论的是 `push()` 的修改。我们在这里的策略是：**将用户输入的值存到当前作为尾节点的空节点，然后再新建一个空节点附加到链表尾部。**这样一来，我们发现即使队列里只有一个数据，链表里仍会有两个节点，此时并发的 `pop()` 和 `push()` 调用再也不会访问同一个节点了。
+
+不过，事情还没有结束，竞态条件依然存在！注意 `pop()` 中调用的 `empty()`，它引用了 `tail` 来做比较，正是这里和 `push()` 一起产生了竞态条件。解决方法很简单，上个锁就好了。虽然我们最终还是引入了互斥量，但是对比上面的例子我们可以看到：**互斥量的持有时间大幅缩小，因为它仅限于对 `tail` 的访问，因此并发性能得到了提升。**
 
 ## 小结
 
