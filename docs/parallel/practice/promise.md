@@ -42,3 +42,59 @@ return value;
 ```
 
 使用 Promise 可以避免回调地狱，用更自然地方法编写程序。
+
+## `!cpp std::packaged_task`
+
+如果每次想启动线程执行别的任务的时候都要像上面一样先包装函数然后创建 promise 再启动线程就显得太过麻烦。C++ 中提供了 `std::packaged_task` 来完成包装函数和 promise 的部分。
+
+
+```cpp
+#include <iostream>
+#include <chrono>
+#include <thread>
+#include <functional>
+#include <future>
+
+int calculate(int arg) {
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    return arg + 42;
+}
+
+int main() {
+    std::packaged_task<int(int)> task(calculate);
+    std::future<int> fut = task.get_future();
+    std::thread t(std::move(task), 1);
+    t.detach();
+    std::cout << "Continue main" << std::endl;
+    std::cout << fut.get() << std::endl;
+    return 0;
+}
+```
+
+包装后的任务并不会自动执行，但执行之后会自动设置 future 的值，我们只需要在执行任务之前获得 future，然后使用这个 future 来获取返回值即可。
+
+## `#!cpp std::async`
+
+如果不想手动开线程去执行任务，可以使用 `#!cpp std::async` 来直接启动异步任务，只需要去获得 `future` 的值即可。
+
+```cpp
+#include <iostream>
+#include <chrono>
+#include <thread>
+#include <functional>
+#include <future>
+
+int calculate(int arg) {
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    return arg + 42;
+}
+
+int main() {
+    std::future<int> fut = std::async(calculate, 1);
+    std::cout << "Continue main" << std::endl;
+    std::cout << fut.get() << std::endl;
+    return 0;
+}
+```
+
+这种方式使用最简单，但是对于执行的细节控制比较少。
