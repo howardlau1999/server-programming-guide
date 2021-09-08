@@ -2,7 +2,7 @@
 
 支持多线程共享的队列是一种相当常见且重要的数据结构。正如我们在[多线程编程](../multi-threading.md)中看到的那样，需要多线程的场景很多都会表现为一种生产者和消费者之间的协作关系。为了让生产者得以将数据传递给消费者，我们往往就需要一个先进先出（FIFO）的数据结构：队列。
 
-在传统的单线程程序里，实现一个队列相当简单。然而在多线程的环境下，我们的队列必须满足以下额外的条件：
+在传统的单线程程序里，实现一个队列相当简单。不过在多线程的环境下，除了无死锁（deadlock-free）等基本条件之外，我们的队列还必须满足以下额外的条件：
 
 * 线程安全（thread-safe）
 
@@ -11,8 +11,8 @@
 * 异常安全（exception-safe）
 
   当一个线程调用数据结构提供的函数中途出现异常时，数据结构内部状态不会损坏，其他线程依然可以正常访问并得到正确的结果。并且也不会出现内存泄露。
+  
   虽然异常安全在单线程场景下也很重要，但它值得在多线程场景中被再次强调。因为多线程下因异常安全造成的 bug 往往更加难以复现、排查，有时甚至会造成整个软件的崩溃。
-
 
 在 C++ 中实现这样的一个队列，至少存在两种方法：基于互斥量的方法和基于原子量的方法。为了简单起见，我们在本节中只介绍基于互斥量的方法。
 
@@ -72,7 +72,7 @@ public:
 
     * `push()` 函数中调用的 `q.push()` 在底层会调用内部容器（通常是 `std::deque` 或 `std::list`）的 `push_back()` 函数。
 
-    这里，STL 保证 `push_back() ` 在因为内存分配出错或者元素拷贝或移动出错时，会表现得就像函数没有被调用过一样。在出现异常后，C++ 会自动进行栈展开（stack unwinding），`lock` 的析构函数被调用，我们的锁因此被解开。
+    这里，STL 保证 `push_back()` 在因为内存分配出错或者元素拷贝或移动出错时，会表现得就像函数没有被调用过一样。在出现异常后，C++ 会自动进行栈展开（stack unwinding），`lock` 的析构函数被调用，我们的锁因此被解开。
     
     因此，我们的 `push()` 函数是异常安全的。
 
@@ -108,10 +108,6 @@ public:
     // 为了简便，我们暂时不考虑拷贝构造和赋值
     queue(const queue& other) = delete;
     queue& operator=(const queue& other) = delete;
-
-    bool empty() {
-        return !head;
-    }
 
     void push(T element) {
         auto ptr = std::make_unique(std::move(element));
@@ -161,18 +157,14 @@ class queue {
     node* tail;
 
 public:
-    queue() : head(std::make_unique()), tail(head.get()) {}
+    queue() : head(std::make_unique<T>()), tail(head.get()) {}
     // 为了简便，我们暂时不考虑拷贝构造和赋值
     queue(const queue& other) = delete;
     queue& operator=(const queue& other) = delete;
 
-    bool empty() {
-        return head.get() == tail;
-    }
-
     void push(T element) {
         auto element_ptr = std::make_shared(std::move(element));
-        auto node_ptr = std::make_unique();
+        auto node_ptr = std::make_unique<T>();
         auto new_tail = node_ptr.get();
         // 将当前尾节点的值设为 `element_ptr`，而新建的空节点 `node_ptr` 作为新的尾节点
         tail->data = element_ptr;
@@ -181,7 +173,7 @@ public:
     }
 
     std::shared_ptr<T> pop() {
-        if (empty())
+        if (head.get() == tail)
             return std::shared_ptr<T>();
         auto res = head->data;
         auto old_head = std::move(head);
@@ -195,7 +187,71 @@ public:
 
 最值得讨论的是 `push()` 的修改。我们在这里的策略是：**将用户输入的值存到当前作为尾节点的空节点，然后再新建一个空节点附加到链表尾部。**这样一来，我们发现即使队列里只有一个数据，链表里仍会有两个节点，此时并发的 `pop()` 和 `push()` 调用再也不会访问同一个节点了。
 
-不过，事情还没有结束，竞态条件依然存在！注意 `pop()` 中调用的 `empty()`，它引用了 `tail` 来做比较，正是这里和 `push()` 一起产生了竞态条件。解决方法很简单，上个锁就好了。虽然我们最终还是引入了互斥量，但是对比上面的例子我们可以看到：**临界区变小了，仅限于对 `tail` 的访问，因此并发性能得到了提升。**
+接下来，我们在这种设计的基础上放置互斥量。和简单的实现不同，我们追求尽可能大的并发访问性。经过分析，我们可以发现这些可能造成竞态条件的情况：
+
+1. 多个线程并发调用 `push()`
+2. 多个线程并发调用 `pop()`
+3. 多个线程并发调用 `push()` 和 `pop()`
+
+这几种情况的竞争焦点都是 `head` 和 `tail`，我们可以分别给它们引入一个互斥量进行保护。最后的代码如下所示：
+
+```cpp
+template<typename T>
+class queue {
+    struct node {
+        std::shared_ptr<T> element;
+        std::unique_ptr<node> next;
+    };
+
+    std::unique_ptr<node> head;
+    node* tail;
+    std::mutex head_mutex;
+    std::mutex tail_mutex;
+
+    node* get_tail() {
+        std::scoped_lock lock(tail_mutex);
+        return tail;
+    }
+
+    std::unique_ptr<node> pop_head() {
+        // 给 `head` 加锁，防止并发的 `pop()` 导致竞态条件
+        std::scoped_lock lock(head_mutex);
+        // `get_tail()` 会给 `tail` 加锁，从而避免了并发的 `pop()` 和 `push()` 可能导致的竞态条件
+        if (head.get() == get_tail())
+            return std::unique_ptr<node>();
+        auto old_head = std::move(head);
+        head = std::move(old_head->next);
+        return old_head;
+    }
+
+public:
+    queue() : head(std::make_unique<T>()), tail(head.get()) {}
+    // 为了简便，我们暂时不考虑拷贝构造和赋值
+    queue(const queue& other) = delete;
+    queue& operator=(const queue& other) = delete;
+
+    void push(T element) {
+        auto element_ptr = std::make_shared(std::move(element));
+        auto node_ptr = std::make_unique<T>();
+        auto new_tail = node_ptr.get();
+        // 仅在需要访问 tail 时才加锁，这里的锁可以避免并发的 `push()` 导致的竞态条件
+        std::scoped_lock lock(tail_mutex);
+        tail->data = element_ptr;
+        tail->next = std::move(node_ptr);
+        tail = new_tail;
+    }
+
+    std::shared_ptr<T> pop() {
+        auto old_head = pop_head();
+        if (old_head)
+            return old_head->data;
+        else
+            return std::shared_ptr<T>();
+    }
+};
+```
+
+从上面的代码来看，我们通过引入两个互斥量，成功地解决了可能出现的竞态条件。虽然我们最终还是引入了互斥量，但是对比上面的例子我们可以看到：**`push()` 和 `pop()` 只在恰当的时候才给互斥量上锁，临界区变小了，并发性能得到了提升。**上面的实现依然是异常安全的，至于具体的分析则留给读者。
 
 ## 小结
 
