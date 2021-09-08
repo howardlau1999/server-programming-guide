@@ -152,8 +152,8 @@ nav:
   - 与他人合作:
     - 快速上手项目: "collaboration/getting-started-on-a-project.md"
     - "实际的 Git 场景":
-      - 概览: "collaboration/index.md"
-      - 解决代码合并冲突: "collaboration/resolve-conflicts.md"
-      - 高效地处理分支切换: "collaboration/switching-branches.md"
-      - "fork 与多远端仓库下的协作": "collaboration/fork-and-multi-remote-repositories.md"
+      - 概览: "collaboration/git-workflow/index.md"
+      - 解决代码合并冲突: "collaboration/git-workflow/resolve-conflicts.md"
+      - 高效地处理分支切换: "collaboration/git-workflow/switching-branches.md"
+      - "fork 与多远端仓库下的协作": "collaboration/git-workflow/fork-and-multi-remote-repositories.md"
   
