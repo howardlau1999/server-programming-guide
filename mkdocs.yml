@@ -112,6 +112,8 @@ nav:
       - 多进程共享队列: "parallel/practice/multi-processing-queue.md"
       - 回调模型: "parallel/practice/callback.md"
       - "Future 模型": "parallel/practice/future.md"
+      - 取消操作: "parallel/practice/cancellation.md"
+      - 操作超时: "parallel/practice/timeout.md"
       - 线程池: "parallel/practice/thread-pool.md"
       - 进程池: "parallel/practice/process-pool.md"
   - 网络编程 RPC 入门:
