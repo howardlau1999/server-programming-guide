@@ -111,7 +111,7 @@ nav:
       - 多线程共享队列: "parallel/practice/multi-threading-queue.md"
       - 多进程共享队列: "parallel/practice/multi-processing-queue.md"
       - 回调模型: "parallel/practice/callback.md"
-      - "Promise 模型": "parallel/practice/promise.md"
+      - "Future 模型": "parallel/practice/future.md"
       - 线程池: "parallel/practice/thread-pool.md"
       - 进程池: "parallel/practice/process-pool.md"
   - 网络编程 RPC 入门:
