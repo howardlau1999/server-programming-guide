@@ -20,7 +20,7 @@ protected:
     }
 public:
     T get() {
-        std::scoped_lock lk(mu);
+        std::unique_lock lk(mu);
         cv.wait(lk, []() { state == READY });
         return value;
     }
@@ -76,7 +76,7 @@ int main() {
 
 使用 Promise 可以避免回调地狱，用更自然地方法编写程序。
 
-## `!cpp std::packaged_task`
+## `#!cpp std::packaged_task`
 
 如果每次想启动线程执行别的任务的时候都要像上面一样先包装函数然后创建 promise 再启动线程就显得太过麻烦。C++ 中提供了 `std::packaged_task` 来完成包装函数和 promise 的部分。
 
@@ -130,4 +130,4 @@ int main() {
 }
 ```
 
-这种方式使用最简单，但是对于执行的细节控制比较少。
+这种方式使用最简单，但是对于执行的细节控制比较少。我们可以编写自己的**线程池**来实现类似的 API，同时能够把控更多细节。
