@@ -158,4 +158,6 @@ nav:
       - 解决代码合并冲突: "collaboration/git-workflow/resolve-conflicts.md"
       - 高效地处理分支切换: "collaboration/git-workflow/switching-branches.md"
       - "fork 与多远端仓库下的协作": "collaboration/git-workflow/fork-and-multi-remote-repositories.md"
+  - 附录:
+    - 配置基本编程环境: "appendix/build-env.md"
   
