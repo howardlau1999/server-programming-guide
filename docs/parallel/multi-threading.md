@@ -354,6 +354,11 @@ terminate called without an active exception
 ???+info
     容易发现，如果我们创建一个初始值为 1 的信号量，那么它在功能上就等同于一个互斥量了。进行 P 操作相当于上锁，进行 V 操作相当于解锁。
 
+???-info "P 操作和 V 操作名字的由来"
+    信号量的概念其实是由荷兰计算机家 Dijkstra 提出的，他在论文里用荷兰语 Passering 和 Vrijgave 两个单词来分别形容上述的两个操作。
+
+    Dijkstra 为计算机并行编程做出了卓越贡献，我们很快就会在后文看到他提出的关于并发的一个经典的问题。
+
 在 Linux 中，信号量主要有两种实现：System V Semaphore 和 POSIX Semaphore。其中后者较为常用，因此接下来简单介绍后者。
 
 POSIX Semaphore 相关的 API 位于头文件 `semaphore.h` 中，P 操作对应 `sem_wait` 函数，V 操作对应 `sem_post` 函数。
