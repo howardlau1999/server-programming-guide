@@ -259,3 +259,11 @@ public:
 
 ???+info
     你可能会了解到其他语言中有着其他的同步方法，例如 Go 语言中的 Channel、Erlang 语言中的 Mailbox，但其背后的实现原理仍然是同步队列，因此，在编写多线程以及多进程程序的时候，必须熟练掌握队列这一基本而重要的数据结构。
+
+## 参考实现
+
+以下是一些健壮的高性能的多线程队列实现参考：
+
+- [Boost 的无锁队列](https://www.boost.org/doc/libs/1_77_0/doc/html/boost/lockfree/queue.html)
+- [Intel Thread Building Blocks](https://spec.oneapi.io/versions/latest/elements/oneTBB/source/containers/concurrent_queue_cls.html)
+- [moodycamel](https://github.com/cameron314/concurrentqueue)
