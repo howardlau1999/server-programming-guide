@@ -35,11 +35,11 @@ wsl --set-default-version 1
 wsl --install --distribution Debian
 ```
 
-关于 WSL 的使用，最佳的教材即为[官方文档](https://docs.microsoft.com/zh-cn/windows/wsl/)，另外很推荐配合 VSCode 的[Remote-WSL](https://docs.microsoft.com/zh-cn/windows/wsl/tutorials/wsl-vscode)插件。假设你已经看过官方文档，以下内容给出一些日常使用经验。
+关于 WSL 的使用，最佳的教材即为[官方文档](https://docs.microsoft.com/zh-cn/windows/wsl/)，另外很推荐配合 VSCode 的 [Remote-WSL](https://docs.microsoft.com/zh-cn/windows/wsl/tutorials/wsl-vscode) 插件。假设你已经看过官方文档，以下内容给出一些日常使用经验。
 
 WSL 的大部分功能都可以被完整 Linux 或装在虚拟机中的 Linux 代替，反之也一样。因此上述 Linux 的使用技巧均可使用在 WSL 中。
 
-WSL 还存在一些局限性，例如 WSL1 不支持 GPU 和很多系统调用，WSL2 访问 Windows 文件性能差，两者（目前为止）均不能访问 USB 设备等。那除了日常使用更方便之外，WSL 还有其它的必要性吗？答案自然是有。当你的项目同时涉及到 Windows 和 Linux 环境下的混合编译时，WSL 一定是你的最佳选择（考虑到 WSL2 访问 Windows 文件性能极差，因此虽然现在微软主推 WSL2，但我仍然建议使用 WSL1）；又例如，你可能会经常搞坏 Linux 环境，每次都要重装系统（无论物理机还是虚拟机）都会极大的消耗你的精力，而 WSL 不过是点一下卸载再重新点一下安装的事，前后几乎只有几分钟，并且还提供了打包备份的功能（`wsl --export`和 `wsl --import`）。
+WSL 还存在一些局限性，例如 WSL1 不支持 GPU 和很多系统调用，WSL2 访问 Windows 文件性能差，两者（目前为止）均不能访问 USB 设备等。那除了日常使用更方便之外，WSL 还有其它的必要性吗？答案自然是有。当你的项目同时涉及到 Windows 和 Linux 环境下的混合编译时，WSL 一定是你的最佳选择（考虑到 WSL2 访问 Windows 文件性能极差，因此虽然现在微软主推 WSL2，但我仍然建议使用 WSL1）；又例如，你可能会经常搞坏 Linux 环境，每次重装系统（无论物理机还是虚拟机）都会极大的消耗你的精力，而 WSL 不过是点一下卸载再重新点一下安装的事，前后几乎只有几分钟，并且还提供了打包备份的功能（`wsl --export`和 `wsl --import`）。
 
 ### WSL 访问 Windows
 
@@ -82,6 +82,6 @@ drwxrwxrwx 1 wuk wuk  4096 Dec 21 05:41 docs
 wsl git clone https://github.com/howardlau1999/server-programming-guide.git
 ```
 
-当然要注意的是，如果项目中没有特别约束，那么这样做的一切设置（例如行末回车是`CRLF`还是`LF`）都是按照 Linux 中的设置来的，因此如果在 Windows 中直接打开的话可能会出现乱码的情况，此时换一个可以正确处理的编辑器（如 vscode）可解决。
+从这种意义上来说，你可以把 wsl 当做 windows 下的一个超级包管理器，可以通过 wsl 安装使用 linux 下的工具链。当然要注意的是，如果项目中没有特别约束，那么这样做的一切设置（例如行末回车是`CRLF`还是`LF`）都是按照 Linux 中的设置来的，因此如果在 Windows 中直接打开的话可能会出现乱码的情况，此时换一个可以正确处理的编辑器（如 vscode）可解决。
 
 ## macOS
