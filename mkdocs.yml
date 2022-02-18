@@ -50,7 +50,9 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
-  
+extra_css:
+  - stylesheets/extra.css
+
 nav:
   - 概览: "index.md"
   - 编译链接基础知识:
