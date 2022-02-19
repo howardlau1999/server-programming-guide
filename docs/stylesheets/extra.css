@@ -1,4 +1,7 @@
-p, code {
-    line-break: anywhere;
+p {
     text-align: justify;
+}
+
+code, a {
+    line-break: anywhere;
 }
