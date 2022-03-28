@@ -284,7 +284,10 @@ terminate called without an active exception
     没有特别的理由的情况下，一般使用 `compare_exchange_weak()` 即可。
     
 ???info "内存一致性模型"
-    原子量提供的这些函数都可以接收额外的 `memory_order` 参数，它是 C++ 提供给程序员来指示编译器对代码的重排程度的标识。在上面的例子里，我们其实可以使用 `memory_order_consume` 和 `memory_order_acquire` 来进一步提升原子量访问的性能。更多有关 Memory order 的话题已经超出了本文的讨论范围，相关资料可以查阅 [cppreference.com](http://www.cplusplus.com/reference/atomic/memory_order/)。
+    原子量提供的这些函数都可以接收额外的 `memory_order` 参数，它是 C++ 提供给程序员来指示编译器以及 CPU 对代码的重排程度的标识。在上面的例子里，我们其实可以使用 `memory_order_consume` 和 `memory_order_acquire` 来进一步提升原子量访问的性能。简而言之，在现代的 CPU 体系结构中，访存指令是允许重排的，唯一的限制是它们在一个核上是和程序的指令顺序一样的。而当一个核试图访问另一个核读写的内存地址的时候，才有可能看到和顺序不一致的情况。简而言之，`memory_order_relaxed` 标识该原子操作的以及其他访存操作的顺序无关紧要，允许最大程度的乱序；`memory_order_release` 标识该原子指令前的访存操作不可以乱序到该原子指令后，通常用于“发布”一个更改，例如将数组长度加一；而 `memory_order_acquire` 则标识该原子指令后的操作不能被乱序到该原子指令前，通常用来“获取”更改，例如获取最新的数组长度。`memory_order_seq_cst` 是最为严格，也是默认的标识，意味着该原子操作前后的访存操作都不能穿越该操作乱序，而且所有核心看到的修改顺序是一致的。
+
+    更多有关 Memory order 的话题已经超出了本文的讨论范围，相关资料可以查阅 [cppreference.com](http://www.cplusplus.com/reference/atomic/memory_order/)。
+
 
 ### 条件变量
 
