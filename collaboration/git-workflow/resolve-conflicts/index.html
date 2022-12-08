@@ -1,0 +1,3010 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://liuhaohua.com/server-programming-guide/collaboration/git-workflow/resolve-conflicts/">
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.7">
+    
+    
+      
+        <title>解决代码合并冲突 - 服务器编程新手入门 - Server Programming Guide</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.20d9efc8.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+
+  <script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-C7E0KYN4VG"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-C7E0KYN4VG",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-C7E0KYN4VG",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?e22bc81eba95d694372372b42adabdaf";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#解决代码合并冲突" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+        <aside class="md-banner">
+          <div class="md-banner__inner md-grid md-typeset">
+            
+            
+<img class="twemoji" alt="🚧" src="https://twemoji.maxcdn.com/2/svg/1f6a7.svg" title=":constrution" /> 本文档还在编写中
+
+          </div>
+          
+        </aside>
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="服务器编程新手入门 - Server Programming Guide" class="md-header__button md-logo" aria-label="服务器编程新手入门 - Server Programming Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            服务器编程新手入门 - Server Programming Guide
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              解决代码合并冲突
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent=""  aria-label="夜间模式"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="夜间模式" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3 3.19.09m3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95 2.06.05m-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31Z"/></svg>
+            </label>
+          
+        
+          
+          
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="" data-md-color-accent=""  aria-label="白天模式"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="白天模式" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5c-.84 0-1.65.15-2.39.42L12 2M3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29L3.34 7m.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14L3.36 17M20.65 7l-1.77 3.79a7.023 7.023 0 0 0-2.38-4.15l4.15.36m-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29L20.64 17M12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44L12 22Z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/howardlau1999/server-programming-guide/" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="服务器编程新手入门 - Server Programming Guide" class="md-nav__button md-logo" aria-label="服务器编程新手入门 - Server Programming Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    服务器编程新手入门 - Server Programming Guide
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/howardlau1999/server-programming-guide/" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          编译链接基础知识
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="编译链接基础知识" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          编译链接基础知识
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../basics/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../basics/procedure/" class="md-nav__link">
+        编译过程概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../basics/static-dynamic-linkage/" class="md-nav__link">
+        静态链接与动态链接
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../basics/loading/" class="md-nav__link">
+        程序的装载与运行
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../basics/hooks/" class="md-nav__link">
+        扩展知识：利用链接与加载覆盖程序函数
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../basics/cross-compilation/" class="md-nav__link">
+        扩展知识：交叉编译
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          构建系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="构建系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          构建系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../build-system/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../build-system/make/" class="md-nav__link">
+        Make
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../build-system/ninja/" class="md-nav__link">
+        Ninja
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../build-system/bazel/" class="md-nav__link">
+        Bazel
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../build-system/xmake/" class="md-nav__link">
+        XMake
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../build-system/build-cache/" class="md-nav__link">
+        编译缓存
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../build-system/distributed-compiling/" class="md-nav__link">
+        分布式编译
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          元构建系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="元构建系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          元构建系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta-build-system/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta-build-system/autotools/" class="md-nav__link">
+        Autotools
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta-build-system/cmake/" class="md-nav__link">
+        CMake
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta-build-system/gn/" class="md-nav__link">
+        GN
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta-build-system/third-party-library/" class="md-nav__link">
+        在项目中使用第三方库
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          代码生成
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="代码生成" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          代码生成
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../codegen/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          编写测试
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="编写测试" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          编写测试
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../testing/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../testing/diff/" class="md-nav__link">
+        使用 diff 进行测试
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../testing/googletest/" class="md-nav__link">
+        使用 Google Test 进行测试
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          代码静态分析
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="代码静态分析" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          代码静态分析
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../static-analysis/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../static-analysis/format/" class="md-nav__link">
+        代码格式化
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../static-analysis/lint/" class="md-nav__link">
+        静态检查
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8" type="checkbox" id="__nav_8" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_8">
+          持续集成
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="持续集成" data-md-level="1">
+        <label class="md-nav__title" for="__nav_8">
+          <span class="md-nav__icon md-icon"></span>
+          持续集成
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ci/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ci/github-actions/" class="md-nav__link">
+        使用 Github Actions 进行持续集成
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_9" type="checkbox" id="__nav_9" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_9">
+          日志系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="日志系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_9">
+          <span class="md-nav__icon md-icon"></span>
+          日志系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../logging/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../logging/structured-logging/" class="md-nav__link">
+        结构化日志
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../logging/binary-logging/" class="md-nav__link">
+        二进制日志
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../logging/boost/" class="md-nav__link">
+        使用 Boost.Log
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_10" type="checkbox" id="__nav_10" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_10">
+          指标系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="指标系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_10">
+          <span class="md-nav__icon md-icon"></span>
+          指标系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../metrics/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../metrics/prometheus/" class="md-nav__link">
+        使用 Prometheus 指标库
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11" type="checkbox" id="__nav_11" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11">
+          调试工具
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="调试工具" data-md-level="1">
+        <label class="md-nav__title" for="__nav_11">
+          <span class="md-nav__icon md-icon"></span>
+          调试工具
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../debugging/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../debugging/gdb/" class="md-nav__link">
+        gdb 调试工具
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../debugging/vscode/" class="md-nav__link">
+        配置 VS Code 调试
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../debugging/coredump/" class="md-nav__link">
+        调试内存转储文件
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_12" type="checkbox" id="__nav_12" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_12">
+          内存管理
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="内存管理" data-md-level="1">
+        <label class="md-nav__title" for="__nav_12">
+          <span class="md-nav__icon md-icon"></span>
+          内存管理
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../memory/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../memory/smart-pointer/" class="md-nav__link">
+        智能指针
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../memory/address-sanitizer/" class="md-nav__link">
+        AddressSanitizer 内存安全检测
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../memory/valgrind/" class="md-nav__link">
+        Valgrind 内存安全检测
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../memory/memory-pool/" class="md-nav__link">
+        内存池
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_13" type="checkbox" id="__nav_13" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_13">
+          进入并行编程世界
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="进入并行编程世界" data-md-level="1">
+        <label class="md-nav__title" for="__nav_13">
+          <span class="md-nav__icon md-icon"></span>
+          进入并行编程世界
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../parallel/multi-threading/" class="md-nav__link">
+        多线程编程
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../parallel/multi-processing/" class="md-nav__link">
+        多进程编程
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_13_3" type="checkbox" id="__nav_13_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_13_3">
+          实战
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="实战" data-md-level="2">
+        <label class="md-nav__title" for="__nav_13_3">
+          <span class="md-nav__icon md-icon"></span>
+          实战
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../parallel/practice/multi-threading-queue/" class="md-nav__link">
+        多线程共享队列
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../parallel/practice/multi-processing-queue/" class="md-nav__link">
+        多进程共享队列
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../parallel/practice/callback/" class="md-nav__link">
+        回调模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../parallel/practice/future/" class="md-nav__link">
+        Future 模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../parallel/practice/cancellation/" class="md-nav__link">
+        取消操作
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../parallel/practice/timeout/" class="md-nav__link">
+        操作超时
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../parallel/practice/thread-pool/" class="md-nav__link">
+        线程池
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../parallel/practice/process-pool/" class="md-nav__link">
+        进程池
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14" type="checkbox" id="__nav_14" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14">
+          网络编程 RPC 入门
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="网络编程 RPC 入门" data-md-level="1">
+        <label class="md-nav__title" for="__nav_14">
+          <span class="md-nav__icon md-icon"></span>
+          网络编程 RPC 入门
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../rpc/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../rpc/serialization/" class="md-nav__link">
+        序列化与反序列化
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../rpc/framework/" class="md-nav__link">
+        使用 RPC 框架
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../rpc/server/" class="md-nav__link">
+        编写服务端
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../rpc/client/" class="md-nav__link">
+        编写客户端
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_15" type="checkbox" id="__nav_15" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_15">
+          存储系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="存储系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_15">
+          <span class="md-nav__icon md-icon"></span>
+          存储系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../storage/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_15_2" type="checkbox" id="__nav_15_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_15_2">
+          存储模型
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="存储模型" data-md-level="2">
+        <label class="md-nav__title" for="__nav_15_2">
+          <span class="md-nav__icon md-icon"></span>
+          存储模型
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../storage/kv/" class="md-nav__link">
+        键值对 KV 存储
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../storage/rdbms/" class="md-nav__link">
+        关系型数据库
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../storage/object-storage/" class="md-nav__link">
+        对象存储
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../storage/custom/" class="md-nav__link">
+        其他存储模型
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_15_3" type="checkbox" id="__nav_15_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_15_3">
+          存储位置
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="存储位置" data-md-level="2">
+        <label class="md-nav__title" for="__nav_15_3">
+          <span class="md-nav__icon md-icon"></span>
+          存储位置
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../storage/local/" class="md-nav__link">
+        本地存储
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../storage/remote/" class="md-nav__link">
+        远程存储
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../storage/distributed/" class="md-nav__link">
+        分布式存储
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_16" type="checkbox" id="__nav_16" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_16">
+          服务器程序常见范式
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="服务器程序常见范式" data-md-level="1">
+        <label class="md-nav__title" for="__nav_16">
+          <span class="md-nav__icon md-icon"></span>
+          服务器程序常见范式
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../paradigms/system-design/" class="md-nav__link">
+        系统设计范式
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_16_2" type="checkbox" id="__nav_16_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_16_2">
+          编程范式
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="编程范式" data-md-level="2">
+        <label class="md-nav__title" for="__nav_16_2">
+          <span class="md-nav__icon md-icon"></span>
+          编程范式
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../paradigms/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../paradigms/config/" class="md-nav__link">
+        程序的运行配置
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../paradigms/ioc/" class="md-nav__link">
+        控制反转
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../paradigms/handlers/" class="md-nav__link">
+        注册请求处理器
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../paradigms/background/" class="md-nav__link">
+        启动后台服务
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../paradigms/listen/" class="md-nav__link">
+        创建监听端口监听请求
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../paradigms/plugin/" class="md-nav__link">
+        插件
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_17" type="checkbox" id="__nav_17" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_17">
+          编写文档
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="编写文档" data-md-level="1">
+        <label class="md-nav__title" for="__nav_17">
+          <span class="md-nav__icon md-icon"></span>
+          编写文档
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../documentation/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_18" type="checkbox" id="__nav_18" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_18">
+          部署上线
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="部署上线" data-md-level="1">
+        <label class="md-nav__title" for="__nav_18">
+          <span class="md-nav__icon md-icon"></span>
+          部署上线
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../deployment/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../deployment/packaging/" class="md-nav__link">
+        程序的打包
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../deployment/reverse-proxy/" class="md-nav__link">
+        反向代理
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../deployment/systemd/" class="md-nav__link">
+        systemd 部署
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../deployment/docker/" class="md-nav__link">
+        Docker 部署
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_19" type="checkbox" id="__nav_19" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_19">
+          与他人合作
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="与他人合作" data-md-level="1">
+        <label class="md-nav__title" for="__nav_19">
+          <span class="md-nav__icon md-icon"></span>
+          与他人合作
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started-on-a-project/" class="md-nav__link">
+        快速上手项目
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_19_2" type="checkbox" id="__nav_19_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_19_2">
+          实际的 Git 场景
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="实际的 Git 场景" data-md-level="2">
+        <label class="md-nav__title" for="__nav_19_2">
+          <span class="md-nav__icon md-icon"></span>
+          实际的 Git 场景
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          解决代码合并冲突
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        解决代码合并冲突
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#什么是合并冲突" class="md-nav__link">
+    什么是合并冲突
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#如何解决合并冲突" class="md-nav__link">
+    如何解决合并冲突
+  </a>
+  
+    <nav class="md-nav" aria-label="如何解决合并冲突">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#纯文本编辑" class="md-nav__link">
+    纯文本编辑
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#可视化" class="md-nav__link">
+    可视化
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#缓解合并冲突的产生" class="md-nav__link">
+    缓解合并冲突的产生
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#git-rebase-和-git-merge-的区别" class="md-nav__link">
+    git rebase 和 git merge 的区别
+  </a>
+  
+    <nav class="md-nav" aria-label="git rebase 和 git merge 的区别">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#git-merge" class="md-nav__link">
+    git merge
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#git-rebase" class="md-nav__link">
+    git rebase
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#对比" class="md-nav__link">
+    对比
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#git-pull" class="md-nav__link">
+    git pull
+  </a>
+  
+    <nav class="md-nav" aria-label="git pull">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fast-forward" class="md-nav__link">
+    fast-forward
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#参考实践" class="md-nav__link">
+    参考实践
+  </a>
+  
+    <nav class="md-nav" aria-label="参考实践">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#在自己的分支上使用-rebase" class="md-nav__link">
+    在自己的分支上使用 rebase
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#在合并自己分支时使用-merge---no-ff" class="md-nav__link">
+    在合并自己分支时使用 merge --no-ff
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#灵活运用-squash" class="md-nav__link">
+    灵活运用 squash
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../switching-branches/" class="md-nav__link">
+        高效地处理分支切换
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fork-and-multi-remote-repositories/" class="md-nav__link">
+        fork 与多远端仓库下的协作
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_20" type="checkbox" id="__nav_20" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_20">
+          附录
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="附录" data-md-level="1">
+        <label class="md-nav__title" for="__nav_20">
+          <span class="md-nav__icon md-icon"></span>
+          附录
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../appendix/build-env/" class="md-nav__link">
+        配置基本编程环境
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#什么是合并冲突" class="md-nav__link">
+    什么是合并冲突
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#如何解决合并冲突" class="md-nav__link">
+    如何解决合并冲突
+  </a>
+  
+    <nav class="md-nav" aria-label="如何解决合并冲突">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#纯文本编辑" class="md-nav__link">
+    纯文本编辑
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#可视化" class="md-nav__link">
+    可视化
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#缓解合并冲突的产生" class="md-nav__link">
+    缓解合并冲突的产生
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#git-rebase-和-git-merge-的区别" class="md-nav__link">
+    git rebase 和 git merge 的区别
+  </a>
+  
+    <nav class="md-nav" aria-label="git rebase 和 git merge 的区别">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#git-merge" class="md-nav__link">
+    git merge
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#git-rebase" class="md-nav__link">
+    git rebase
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#对比" class="md-nav__link">
+    对比
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#git-pull" class="md-nav__link">
+    git pull
+  </a>
+  
+    <nav class="md-nav" aria-label="git pull">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fast-forward" class="md-nav__link">
+    fast-forward
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#参考实践" class="md-nav__link">
+    参考实践
+  </a>
+  
+    <nav class="md-nav" aria-label="参考实践">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#在自己的分支上使用-rebase" class="md-nav__link">
+    在自己的分支上使用 rebase
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#在合并自己分支时使用-merge---no-ff" class="md-nav__link">
+    在合并自己分支时使用 merge --no-ff
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#灵活运用-squash" class="md-nav__link">
+    灵活运用 squash
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+  <div style="text-align: justify">
+    
+                  
+
+  <a href="https://github.com/howardlau1999/server-programming-guide/edit/master/docs/collaboration/git-workflow/resolve-conflicts.md" title="编辑此页" class="md-content__button md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+<h1 id="解决代码合并冲突">解决代码合并冲突<a class="headerlink" href="#解决代码合并冲突" title="Permanent link">&para;</a></h1>
+<p>在使用 Git 对我们的项目代码进行版本管理时，我们往往会使用各种分支（branch）来将我们的代码隔离在其他人的分支和主分支以外，这样我们就能确保我们的代码不会影响到其他人，也不会影响到项目的主分支。然而，当我们完成了自己的工作，准备将自己的分支合并到主分支时，有可能会出现合并冲突（merge conflict），导致我们的分支无法被合并。</p>
+<details class="info" open="open">
+<summary>Info</summary>
+<p>本文中会多次出现主分支的概念。狭义上，主分支指的是像 <code>master</code> 分支或 <code>main</code> 分支这样的分支，它们是各种特性（feature）分支、bug 修复分支等分支的最终归属。广义上，它们也可以指那些汇聚了多个分支的修改的分支，比如开发（develop）分支或者测试（test）分支，这些分支在经过充分的测试之后会进入下一个流程，比如合并到最终的 <code>master</code> 分支。</p>
+</details>
+<p>什么是合并冲突？如何解决合并冲突？本篇文章接下来将一一介绍。此外，本文还会对比 <code>git merge</code> 和 <code>git rebase</code> 在合并分支上的区别，以及介绍 <code>fast-forward</code> 方法和一些有效缓解合并冲突产生的方法。</p>
+<h2 id="什么是合并冲突">什么是合并冲突<a class="headerlink" href="#什么是合并冲突" title="Permanent link">&para;</a></h2>
+<p>一般来说，假设我们在 <code>a</code> 分支上通过 <code>git merge b</code> 或者 <code>git rebase b</code> 来将 <code>b</code> 分支合并进当前的分支，同时发生了以下情况中的至少一个时，就会发生合并冲突：</p>
+<ul>
+<li><code>a</code> 分支和 <code>b</code> 分支的作者修改的代码中都包含同一个文件的同一行。</li>
+<li><code>a</code> 分支的作者修改了某个文件，而 <code>b</code> 分支的作者删除了这个文件。</li>
+</ul>
+<p>例如，假设 <code>a</code> 分支和 <code>b</code> 分支都源于 <code>master</code> 分支，此分支只有一个 <code>example.txt</code> 文件：</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:1"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">example.txt</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>line one
+line two
+line three
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<p><code>a</code> 分支的作者将第二行修改为了 <code>line 2</code> 而 <code>b</code> 分支的作者将第二行修改为了 <code>line 二</code>，此时如果 <code>a</code> 分支想要合并入 <code>b</code> 分支，<strong>Git 无法确定合并的结果里 <code>example.txt</code> 的第二行到底应该取 <code>a</code> 分支的修改，还是取 <code>b</code> 分支的修改，合并冲突就此发生</strong>。</p>
+<p>如果你使用了 <code>git merge b</code> 命令，你会得到以下的输出：</p>
+<div class="highlight"><pre><span></span><code>$ git merge b
+Auto-merging example.txt
+CONFLICT (content): Merge conflict in example.txt
+Automatic merge failed; fix conflicts and then commit the result.
+</code></pre></div>
+<p>如果你使用了 <code>git rebase b</code> 命令，你会得到以下的输出：</p>
+<div class="highlight"><pre><span></span><code>$ git rebase b
+Auto-merging example.txt
+CONFLICT (content): Merge conflict in example.txt
+error: could not apply 4404526... commit a 1
+Resolve all conflicts manually, mark them as resolved with
+&quot;git add/rm &lt;conflicted_files&gt;&quot;, then run &quot;git rebase --continue&quot;.
+You can instead skip this commit: run &quot;git rebase --skip&quot;.
+To abort and get back to the state before &quot;git rebase&quot;, run &quot;git rebase --abort&quot;.
+Could not apply 4404526... commit a 1
+</code></pre></div>
+<details class="note" open="open">
+<summary>Note</summary>
+<p>虽然我们使用的命令叫做 <code>git rebase</code>，但是 Git 的输出里仍然叫做 <code>merging</code>。不要和 <code>git merge</code> 混淆，<strong>前者以及本文标题里的“合并”指的是广义上将两个分支的代码合并的过程</strong>。而 <code>git rebase</code> 和 <code>git merge</code> 都能实现这一过程，但存在一些显著的区别，我们下文会讨论。</p>
+</details>
+<details class="note" open="open">
+<summary>Note</summary>
+<p>一般情况下，Git 在分支合并时会自动为我们解决大多数的合并问题，比如在 <code>a</code> 分支的代码中套用 <code>b</code> 分支的各种修改，如新建文件、删除文件、修改代码行等，<strong>只要这些操作不会产生上述的合并冲突</strong>。而那些出现合并冲突的修改才会留给用户自己解决。</p>
+</details>
+<p>在多人协作的中大型项目中，合并冲突则更加容易发生。正如上文所说，每个人工作在自己的分支上时可以自由地根据自己的工作需要修改代码，而不用顾及其他人，因此工作在不同分支上的两个人修改了同一行代码的概率也就随之提升。除此之外，如果你的分支由于工作进度缓慢，迟迟不能被合并，那么这种时间因素导致出现合并冲突的概率和规模也会大大提升。</p>
+<h2 id="如何解决合并冲突">如何解决合并冲突<a class="headerlink" href="#如何解决合并冲突" title="Permanent link">&para;</a></h2>
+<p>Git 在遇到合并冲突时，会将发生冲突的行使用具有特殊格式的几行替代。我们仍以上文的 <code>example.txt</code> 为例子，在执行合并操作之后，让我们查看 <code>example.txt</code> 的内容：</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:1"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">example.txt</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code>line one
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+line 2
+=======
+line 二
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; b
+line three
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<p>这里，Git 将两个分支对这行做的修改都列了出来，并使用 <code>=======</code> 进行分割，同时使用 <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> 和 <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> 分别标出当前分支和要合并进来的分支名。Git 在这里的意思是让我们自己检查一下该如何处置冲突。</p>
+<p>不要被分割线所误导，Git 使用它们仅仅是为了区分不同分支的修改，<strong>并不是在说你只能保留其中一方的修改</strong>。我们应该结合实际情况做出决定，比如我们可以综合双方的修改，再稍微修改一下得到最后的结果；也可以放弃一方的修改。对于复杂的项目来说，我们一般都需要仔细观察冲突的双方的修改，仔细思考解决方案，确保在让程序最终正常地体现出双方修改的同时，不引入额外的 bug 等问题。</p>
+<p>要处置这里的冲突，我们有两种办法：一种是比较原始的纯文本编辑，即直接修改其中的几行；另一种是借助现代的代码编辑器提供的 Git 支持，使用可视化的方式高效地解决冲突。无论你选择哪种方法，请确保 Git 添加的三行标记被删去，原因请见下文。</p>
+<details class="info" open="open">
+<summary>Info</summary>
+<p>我们可以使用 <code>git status</code> 来查看当前合并冲突的状态，如下所示，输出中列出了发生冲突的文件名，以及我们可以使用 <code>git merge --abort</code> 来终止这次合并，也就是将当前的仓库回退到我们执行 <code>git merge b</code> 之前的状态。</p>
+<div class="highlight"><pre><span></span><code>On branch a
+You have unmerged paths.
+    (fix conflicts and run &quot;git commit&quot;)
+    (use &quot;git merge --abort&quot; to abort the merge)
+
+Unmerged paths:
+    (use &quot;git add &lt;file&gt;...&quot; to mark resolution)
+        both modified:   example.txt
+
+no changes added to commit (use &quot;git add&quot; and/or &quot;git commit -a&quot;)
+</code></pre></div>
+</details>
+<h3 id="纯文本编辑">纯文本编辑<a class="headerlink" href="#纯文本编辑" title="Permanent link">&para;</a></h3>
+<p>使用纯文本编辑的方法处置冲突时，我们只需要按需删除相应的行即可。比如，如果我们想要只保留我们自己的修改，可以将去掉第 2、4、5、6 行：</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:1"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">example.txt</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>line one
+line 2
+line three
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<p>如果我们想要同时保留我们的和分支 B 的修改，可以只去掉第 2、4、6 行。对于我们简单的 <code>example.txt</code> 例子来说，使用纯文本编辑的方式效率还不错，但是当我们工作在一个规模较大的多人协作项目时，出现的冲突往往行数更多，牵扯的代码逻辑也更为复杂，此时处理这些冲突的难度就会加大，我们也会更加容易犯错。</p>
+<details class="attention" open="open">
+<summary>Attention</summary>
+<p>Git 不会检查你对合并冲突的处理是否“正确”。对于上面的例子，即使你什么都不做，也就是保留 <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> 和 <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> 等部分，你依然可以正常使用 <code>git add</code>、 <code>git commit</code> 和 <code>git push</code> 来将你的代码提交到远端仓库中。这是极其危险的，遗留下的这些部分往往会让源代码无法通过编译；或者更危险的情况是它通过了编译，并在生产环境下导致了恶劣的影响。</p>
+</details>
+<p>也许你认为自己不会愚蠢到忘记对冲突进行处理，但实践表明当发生冲突的文件数目众多时，那些仅仅依靠纯文本编辑的方法来解决冲突的人们很容易会漏掉几个发生冲突的文件，或者是几处冲突。因此，为了安全性和高效率，我们推荐使用接下来介绍的可视化方法来处理合并冲突。</p>
+<h3 id="可视化">可视化<a class="headerlink" href="#可视化" title="Permanent link">&para;</a></h3>
+<p>现代的代码编辑器普遍内建或者通过插件提供了良好的 Git 支持，让我们可以以可视化的方式高效地解决合并冲突。例如在 VSCode 中，如果我们打开上面出现冲突的 <code>example.txt</code>，我们可以看到：</p>
+<p><img alt="" src="../img/visual-git.png" /></p>
+<p>VSCode 为我们高亮了出现冲突的行，使用绿色表示当前分支的改动，使用蓝色表示要合并进来的分支的改动。同时，在高亮块的上方，我们还能看到几个选项按钮。分别是：</p>
+<ol>
+<li>套用当前的改动（Accept Current Change）</li>
+<li>套用合并进来的分支的改动（Accept Incoming Change）</li>
+<li>两边的改动都套用（Accept Both Change）</li>
+<li>对比两边的改动（Compare Changes）</li>
+</ol>
+<p>其中第四个按钮点击之后会出现：</p>
+<p><img alt="" src="../img/visual-git-diff.png" /></p>
+<p>VSCode 会展示一个两栏的代码页，对比两个分支做出的改动，让我们更清晰地看到区别。</p>
+<p>如下图所示，除了能够可视化地展示改动，VSCode 还能够列出发生了合并冲突地所有文件，并以红色标记其文件名，降低我们漏掉冲突文件的可能性。</p>
+<p><img alt="" src="../img/highlighted-conflict-file.png" /></p>
+<p><img alt="" src="../img/conflict-file-list.png" /></p>
+<p>像 GitHub 和 GitLab 这样的平台也为我们提供了在线的冲突解决功能，但对于过于复杂的冲突，它们基本不能解决，而是会要求你在本地解决。下图为 GitHub 为 Pull requests 提供的冲突解决页面，它列出了发生冲突的文件列表，以及高亮显示了冲突代码行：</p>
+<p><img alt="" src="../img/github-diff.png" /></p>
+<h2 id="缓解合并冲突的产生">缓解合并冲突的产生<a class="headerlink" href="#缓解合并冲突的产生" title="Permanent link">&para;</a></h2>
+<p>也许看到这里，你会认为 Git 的合并冲突解决起来未免也太过麻烦。其实，只要团队的编码习惯得当，我们能够遇到的合并冲突其实会相当地少。本文在此给出一些能够在一定程度上降低合并冲突发生概率的方法：</p>
+<ul>
+<li>尽量对项目代码进行模块化调整，让每个人都工作在相对独立的代码模块中，这样不同的分支间就不容易出现对相同行的修改。</li>
+<li>Bug 修复分支应该确保尽量轻巧，一个分支对应一个 bug 修复，减少分支对项目代码的修改量。</li>
+<li>加快分支从创建到合并的速度，这涉及到选用合理的项目管理方法，以及代码审查制度。</li>
+</ul>
+<h2 id="git-rebase-和-git-merge-的区别"><code>git rebase</code> 和 <code>git merge</code> 的区别<a class="headerlink" href="#git-rebase-和-git-merge-的区别" title="Permanent link">&para;</a></h2>
+<p>我们在前文讲过，这两个命令都可以将两个分支的代码进行合并，而且合并出现冲突时都需要我们手动处理冲突代码行，并且执行一些命令来确认提交。从它们执行的结果来看，两者的功能是相同的，但它们却在实现的方式上存在显著的区别。</p>
+<p>简单来说，我们可以将每一个分支看作一个由 commit 作为节点构成的树枝，如下图所示：</p>
+<p><img alt="" src="../img/branch.png" /></p>
+<p>图中的每一个圆圈表示一次 commit，三个箭头分别表示三个分支目前指向的 commit 序列。从图中可以看到 <code>branch-a</code> 的 commit 序列是 <code>C0 -&gt; C1 -&gt; C2 -&gt; C3</code>，也就是说这个分支上有这样的一些 commit。而 <code>main</code> 的 commit 序列则为 <code>C0 -&gt; C1 -&gt; C2</code>。</p>
+<p>现在继续使用 <code>example.txt</code> 的例子，我们在 <code>a</code> 分支上执行 <code>git log --graph --format=oneline</code> 来查看当前分支的历史记录，得到以下输出：</p>
+<div class="highlight"><pre><span></span><code>* 4404526ee52af9994b409c713e1efc6651cef99e (HEAD -&gt; a, origin/a) commit a 1
+* 1518bc8eaa5ad79e31ef41b9b229d231bb82ccb2 (origin/master, master) commit master 1
+</code></pre></div>
+<p>在输出中，commit 按照时间从近到远的顺序依次被输出。其中第一行括号里的 <code>HEAD -&gt; a</code> 表示 a 分支最新的 commit 就是当前行对应的 commit，并且我们目前正在这个 commit 上工作。</p>
+<details class="info" open="open">
+<summary>Info</summary>
+<p>输出中的第二个 commit，后面的括号内容 <code>origin/master, master</code> 的意思分别是：远程仓库的 <code>master</code> 分支指向了此 commit，本地仓库的也是。并不是所有输出的 commit 都会有这样的括号。</p>
+</details>
+<h3 id="git-merge"><code>git merge</code><a class="headerlink" href="#git-merge" title="Permanent link">&para;</a></h3>
+<p>假如我们此时执行 <code>git merge b</code> 并解决冲突，我们再运行 <code>git log --graph --format=oneline</code> 会得到以下输出：</p>
+<div class="highlight"><pre><span></span><code>*   6ee34e9a5bac24b26a958bd6f658c70b056f1f26 (HEAD -&gt; a) Merge branch &#39;b&#39; into a
+|\
+| * ab0502e4504a5f05012daf075611a74055fc83b2 (origin/b, b) commit b 1
+* | 4404526ee52af9994b409c713e1efc6651cef99e (origin/a) commit a 1
+|/
+* 1518bc8eaa5ad79e31ef41b9b229d231bb82ccb2 (origin/master, master) commit master 1
+</code></pre></div>
+<p>输出的内容复杂了很多，注意里面的 <code>|</code>、<code>\</code> 和 <code>/</code> 符号，它们表示直线和折线，<code>*</code> 符号表示一个节点，这种作图方式表达的内容和上面给出的蓝底图片相似。</p>
+<p>由于我们通过 <code>git merge b</code> 来将 <code>b</code> 分支上的 commit 合并到我们的 <code>a</code> 分支里，Git 会在历史记录中为我们完整地输出 <code>b</code> 分支上的所有 commit，并最终以一个折线汇入 <code>a</code> 分支里<strong>在进行 <code>git merge</code> 之后自动产生的一次 commit</strong> 上。</p>
+<h3 id="git-rebase"><code>git rebase</code><a class="headerlink" href="#git-rebase" title="Permanent link">&para;</a></h3>
+<p>如果我们执行的不是 <code>git merge</code> 而是 <code>git rebase</code> 又会如何呢？在修复冲突之后，运行 <code>git log --graph --format=oneline</code> 得到的输出如下：</p>
+<div class="highlight"><pre><span></span><code>* dbb05d13734ee3054d0f132edd3bdf97a0997cbd (HEAD -&gt; a) commit a 1
+* ab0502e4504a5f05012daf075611a74055fc83b2 (origin/b, b) commit b 1
+* 1518bc8eaa5ad79e31ef41b9b229d231bb82ccb2 (origin/master, master) commit master 1
+</code></pre></div>
+<p>我们发现 <code>rebase</code> 命令修改了 <code>a</code> 分支的 commit 序列，将 <code>a</code> 在和 <code>b</code> 的分叉点，也就是第三行指向的 commit <strong>之后的所有 commit（为了简单，我们的例子只有第一行对应的 commit），重新设置到了 <code>b</code> 分支最新的 commit 上</strong>，也就是说，我们现在的得到的 <code>a</code> 分支，等价于我们一开始就从 <code>b</code> 分支上新建一个分支进行修改。</p>
+<p>Git 并没有像 <code>merge</code> 那样再输出一些折线了，<strong>我们得到了一个平坦的、用一条直线就能串起来表示的 commit 记录</strong>，它们看上去更加简单、直观。</p>
+<h3 id="对比">对比<a class="headerlink" href="#对比" title="Permanent link">&para;</a></h3>
+<p>究竟应该使用 <code>merge</code> 还是 <code>rebase</code>，或者说这两种方法孰优孰劣，是程序员们除了究竟使用 tab 还是 space 作为缩进外的又一个争论不休的话题。</p>
+<p>对于 <code>merge</code> 来说，虽然它较为安全，能够直观地展示各个分支的关系，但是在大型项目中往往会遇到分支数量过多导致 Git 历史记录乱成一团的问题。对于 <code>rebase</code> 来说，它则能够产生平整、简单的历史记录，但缺点是隐藏了真正的提交记录。</p>
+<details class="caution" open="open">
+<summary>Caution</summary>
+<p>由于 <code>rebase</code> 会对当前分支的 commit 序列造成较大幅度的修改，我们必须谨慎地使用它。例如，如果我们在公共的分支，比如 <code>master</code> 上执行 <code>rebase</code>，那么很可能会对其他在此分支上工作的人造成恶劣影响，例如造成大量的合并冲突。</p>
+<p>又如，<code>rebase</code> 可能会导致重复冲突的问题。如果在 <code>a</code> 分支上进行 <code>git rebase master</code>，而在 <code>master</code> 上又出现了很多新的提交，那么在 Git 对你的 <code>a</code> 分支上的新提交进行冲突检查时，一种不幸的情况是你在 <code>a</code> 分支上的大量提交都产生了冲突，而 <strong>Git 会要求你一个一个地解决这些提交对应的冲突</strong>。但是这种情况对于 <code>merge</code> 来说却不是问题，因为它会先将 <code>master</code> 上新的提交”压缩“为一个提交，然后和当前的分支进行冲突检查，因此我们最多只会需要解决一次合并冲突。</p>
+</details>
+<p>究竟是使用 <code>merge</code> 还是 <code>rebase</code>，更多讨论可以在互联网上搜索得到，本文章不会给出决定性的建议，但会在后文列举一些有经验的开发者的实践，仅供参考。如果你是 Git 的初学者，我们建议使用 <code>merge</code> 为主。</p>
+<h2 id="git-pull"><code>git pull</code><a class="headerlink" href="#git-pull" title="Permanent link">&para;</a></h2>
+<p>除了主动将当前的工作分支与另一个分支进行合并之外，我们还有一个常用的操作会涉及分支合并：<code>git pull</code>。按照 <a href="https://git-scm.com/docs/git-pull">Git 官方文档</a>，它的作用是拉取远端仓库的更新，并将当前分支对应的远端分支进行合并。默认情况下，它等价于：</p>
+<div class="highlight"><pre><span></span><code>$ git fetch
+$ git merge FETCH_HEAD
+</code></pre></div>
+<p>也就是说，假如我们在 <code>master</code> 分支上使用了 <code>git pull</code>，并且其他人之前在此分支上留下了很多新的 commit，那么 <code>git pull</code> 将会在拉取 <code>master</code> 对应的远端分支（通常是 <code>origin/master</code>）之后，<strong>将 <code>origin/master</code> 分支合并到 <code>master</code> 上</strong>。</p>
+<p>我们仍使用 <code>example.txt</code> 的例子，假如此时有人在 <code>master</code> 分支上添加了新的一行：</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:1"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">example.txt</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>line one
+line two
+line three
+<span class="hll">line four
+</span></code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<p>此时我们本地的 <code>master</code> 分支还没有更新，依然是原来的三行，那么我们此时运行 <code>git pull</code>，Git 会像上文的情况一样要求我们为自动生成的 commit 填写 commit message。然后，我们运行 <code>git push</code>，最终运行 <code>git log --graph --format=oneline</code>，</p>
+<div class="highlight"><pre><span></span><code>*   2777790053f709f8caec337a5ee8349cf1147573 (HEAD -&gt; master, origin/master) Merge remote-tracking branch &#39;origin/master&#39;
+|\
+| * 554a828d80dd12a7b10267e594c22722b2e25907 commit master 2
+|/
+* 1518bc8eaa5ad79e31ef41b9b229d231bb82ccb2 commit master 1
+</code></pre></div>
+<p>可以看到，即使没有出现合并冲突，<code>git merge</code> 依然会产生一个 commit，并且会在 commit 记录里留下折线。有人会认为，这种方式会让我们主分支的 commit 记录变得混乱，为什么我们只是简单地同步了一下本地的 <code>master</code> 分支，就要在 commit 记录里留下这么复杂的记录呢？于是，他们会采用 <code>git pull --rebase</code> 命令，让 Git 在 <code>git fetch</code> 之后运行 <code>rebase</code> 而不是 <code>merge</code>，这样得到的 commit 记录如下：</p>
+<div class="highlight"><pre><span></span><code>* 554a828d80dd12a7b10267e594c22722b2e25907 (HEAD -&gt; master, origin/master) commit master 2
+* 1518bc8eaa5ad79e31ef41b9b229d231bb82ccb2 commit master 1
+</code></pre></div>
+<p>对比起来，确实简单了很多，看上去也更加符合我们对这种简单同步操作的预期。</p>
+<details class="info" open="open">
+<summary>Info</summary>
+<p>你可以使用 <code>git config pull.rebase true</code> 来让 <code>git pull</code> 默认使用 <code>rebase</code> 而不是 <code>merge</code>。</p>
+</details>
+<h3 id="fast-forward"><code>fast-forward</code><a class="headerlink" href="#fast-forward" title="Permanent link">&para;</a></h3>
+<p>有人担心 <code>rebase</code> 会在 <code>git pull</code> 时出现上文所说的一些问题，因而他们会使用被称为 <code>fast-forward</code> 方法来取代 <code>rebase</code> 和普通的 <code>merge</code>。对应的命令是 <code>git pull --ff-only</code>，它等价于以下两个命令：</p>
+<div class="highlight"><pre><span></span><code>$ git fetch
+$ git merge --ff-only FETCH_HEAD
+</code></pre></div>
+<p>从命令中可以看到，<code>fast-forward</code> 是一种特殊的 <code>merge</code>。简单来说，他会像 <code>rebase</code> 那样合并分支，不会出现额外的 commit，也不会在 commit 记录里留下折线。但是，<strong>如果出现像合并冲突这样的问题，它会拒绝进行合并</strong>。由此看来，<code>fast-forward</code> 是一个相当安全的合并方法。很多人都推荐使用 <code>fast-forward</code>。</p>
+<details class="info" open="open">
+<summary>Info</summary>
+<p>你可以使用 <code>git config pull.ff only</code> 来让 <code>git pull</code> 默认使用 <code>fast-forward</code>。</p>
+</details>
+<h2 id="参考实践">参考实践<a class="headerlink" href="#参考实践" title="Permanent link">&para;</a></h2>
+<p>在本文的最后，我们来看看在多人协作背景下较为常见的 Git 实践，供读者参考。</p>
+<h3 id="在自己的分支上使用-rebase">在自己的分支上使用 <code>rebase</code><a class="headerlink" href="#在自己的分支上使用-rebase" title="Permanent link">&para;</a></h3>
+<p>在多数情况下，我们会因为要添加一项新功能，或者是进行一项修复工作而在主分支里创建一个新的分支，然后在上面工作。</p>
+<p>某些时候，我们的工作可能需要依赖别人新做出的修改，比如某人修了一个 bug 并把分支合并到了主分支里，而我们刚好需要这个 bug 的修复。那么我们可以将主分支使用 <code>rebase</code> 来合并到我们自己的分支上。</p>
+<p>这样做改变了我们分支的提交记录，因为我们的分支原本是从主分支上更早的提交上分出来的，<code>rebase</code> 之后则让它变成了基于主分支的最新提交。这样做在大多数情况下是可以接受的，我们不妨对比一下如果使用的是 <code>merge</code> 会怎么样：</p>
+<ol>
+<li>如上文所说，它会在我们的分支上产生一个合并的 commit。</li>
+<li>同时，在提交记录里会出现一条从主分支指向我们的分支的折线。</li>
+</ol>
+<p>这样的结果让人难以接受，我们只是想利用一下主分支上最新的修改，却对提交记录产生了这些看上去不太必要的影响。如果我们使用 <code>rebase</code>，我们将摆脱上面的两点结果，得到清晰直观的提交记录。当然，使用 <code>rebase</code> 依然存在上文提到的重复冲突的问题，但对于我们自己的分支来说问题出现的概率或冲突的规模是较低的，因为我们的分支一般只会有较为少量的修改。</p>
+<h3 id="在合并自己分支时使用-merge---no-ff">在合并自己分支时使用 <code>merge --no-ff</code><a class="headerlink" href="#在合并自己分支时使用-merge---no-ff" title="Permanent link">&para;</a></h3>
+<p>一般来说，当我们在自己的分支上完成工作之后，我们会在主分支上使用 <code>git merge --no-ff</code> 来合并我们自己的分支。为什么要使用 <code>--no-ff</code> 参数呢？</p>
+<p>默认情况下，<code>merge</code> 会使用 <code>--ff</code>，也就是说在条件允许的情况下使用 <code>fast-forward</code>，否则会创建一个用于合并的 commit。<code>--no-ff</code> 则是禁止使用 <code>fast-forward</code>，让 Git 总是创建一个新的 commit。</p>
+<p>二者的区别主要体现在这样的一种情况：我们的主分支 <code>develop</code> 一直都没有任何修改，同时我们在刚分出来的 <code>feature</code> 分支做了几个 commit 并合并到主分支，这时二者的区别如下图所示（图片来自<a href="https://nvie.com/posts/a-successful-git-branching-model/">《A successful Git branching model》</a>：</p>
+<p><img alt="" src="../img/merge-no-ff.png" /></p>
+<p>二者得到了不同的提交记录。右边的 <code>--ff</code> 在执行时发现情况适合，使用了 <code>fast-forward</code>，导致我们得到了一条呈直线形态的提交记录。这样看上去虽然很清晰，但<strong>它让我们的 <code>feature</code> 分支被包含到了 <code>develop</code> 分支里</strong>。在可视化的 Git 工具里，左边产生的提交记录能够让人们更直观地看到 <code>feature</code> 分支的存在，并且也能清晰地展现 <code>feature</code> 分支的独立性（从哪里分出来，又汇入到哪里）。</p>
+<h3 id="灵活运用-squash">灵活运用 squash<a class="headerlink" href="#灵活运用-squash" title="Permanent link">&para;</a></h3>
+<p>squash 指的是将若干个 commit 合并为一个单独的 commit。此技巧常用在我们在自己的分支上工作完成后，在合并到主分支之前。有些团队鼓励这样做，因为在 squash 之后，我们的分支只剩下一个 commit，这样在合并之后，我们只会在主分支的提交记录上留下一个 commit 的记录，而这个 commit 正好对应了一个分支的所有修改，因此审阅起来是方便且直观的。</p>
+<p>要进行 squash，我们可以使用交互式 <code>rebase</code>。通过运行 <code>git rebase -i HEAD~n</code>，Git 会调出文本编辑器来编辑当前分支最近 <code>n</code> 个 commit 的记录，例如：</p>
+<div class="highlight"><pre><span></span><code>pick d62788c commit a 2
+pick e7eb691 commit a 3
+pick e4846ad commit a 4
+
+# Rebase 1bf37aa..e4846ad onto 1bf37aa (3 commands)
+#
+# Commands:
+# p, pick &lt;commit&gt; = use commit
+# r, reword &lt;commit&gt; = use commit, but edit the commit message
+# e, edit &lt;commit&gt; = use commit, but stop for amending
+# s, squash &lt;commit&gt; = use commit, but meld into previous commit
+# f, fixup &lt;commit&gt; = like &quot;squash&quot;, but discard this commit&#39;s log message
+# x, exec &lt;command&gt; = run command (the rest of the line) using shell
+# b, break = stop here (continue rebase later with &#39;git rebase --continue&#39;)
+# d, drop &lt;commit&gt; = remove commit
+# l, label &lt;label&gt; = label current HEAD with a name
+# t, reset &lt;label&gt; = reset HEAD to a label
+# m, merge [-C &lt;commit&gt; | -c &lt;commit&gt;] &lt;label&gt; [# &lt;oneline&gt;]
+</code></pre></div>
+<p>注意，commit 的输出顺序为从老到新，最下面的一行才是最新的 commit。将 最下面的两行前面的 <code>pick</code> 命令修改为 <code>s</code> 或 <code>squash</code>，并保存退出，这样 Git 就会将最新的两个 commit 合并到第一个 commit 里，同时调出另一个文本编辑器来要求我们输入这个新的融合 commit 的信息。</p>
+<details class="info" open="open">
+<summary>Info</summary>
+<p>交互式 <code>rebase</code> 还有很多强大的功能。如果你想知道有关其他命令的作用，请参考<a href="https://git-scm.com/docs/git-rebase">官方文档</a>。</p>
+</details>
+<details class="info" open="open">
+<summary>Info</summary>
+<p><code>git merge</code> 也有一个叫做 <code>--squash</code> 选项，它的作用是将目标分支的所有新的 commit 合并为一个融合 commit 并放到当前分支上，但<strong>不会对目标分支做任何修改。</strong></p>
+</details>
+
+  <hr>
+<div class="md-source-file">
+  <small>
+    
+      最后更新:
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_datetime">2021-09-08 22:55:58</span>
+      
+    
+  </small>
+</div>
+
+
+  
+
+
+
+
+                
+  </div>
+
+  
+    <div class="md-source-date">
+      <small>
+          本页作者: <span class='git-page-authors git-authors'><a href='mailto:howardlau1999@hotmail.com'>Howard Lau</a>, <a href='mailto:darkyoooooo@gmail.com'>darkyzhou</a></span>
+      </small>
+    </div>
+  
+
+              </article>
+            </div>
+          
+          
+        </div>
+        
+          <a href="#" class="md-top md-icon" data-md-component="top" hidden>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+            回到页面顶部
+          </a>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="页脚" >
+      
+        
+        <a href="../" class="md-footer__link md-footer__link--prev" aria-label="上一页: 概览" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              概览
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../switching-branches/" class="md-footer__link md-footer__link--next" aria-label="下一页: 高效地处理分支切换" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              高效地处理分支切换
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.top"], "search": "../../../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\s\\-\uff0c\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version.title": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.8492ddcf.min.js"></script>
+      
+    
+  </body>
+</html>

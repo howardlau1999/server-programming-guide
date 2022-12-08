@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?e22bc81eba95d694372372b42adabdaf";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+{% endblock %}
+
+{% block announce %}
+<img class="twemoji" alt="🚧" src="https://twemoji.maxcdn.com/2/svg/1f6a7.svg" title=":constrution" /> 本文档还在编写中
+{% endblock %}
+
+{% block content %}
+  <div style="text-align: justify">
+    {{ super() }}
+  </div>
+
+  {% if git_page_authors %}
+    <div class="md-source-date">
+      <small>
+          本页作者: {{ git_page_authors | default('enable mkdocs-git-authors-plugin') }}
+      </small>
+    </div>
+  {% endif %}
+{% endblock %}
