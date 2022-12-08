@@ -51,7 +51,7 @@ public:
     bool pop(T& element) {
         std::scoped_lock lock(m);
         if (!q.empty()) {
-            element = q.front();
+            element = std::move(q.front());
             q.pop();
             return true;
         }
