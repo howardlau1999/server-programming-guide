@@ -21,7 +21,7 @@
 
 ## `#!cpp std::shared_ptr`
 
-`std::shared_ptr` 表示一个指针可能被多次引用，也就是存在着共享的关系。使用时应该使用 `std::shared_ptr` 来生成一个指向对象的 `std::shared_ptr`。`std::shared_ptr` 允许拷贝，在使用时直接使用按值传递的方式来使用即可，不需要使用 `std::move`。
+`std::shared_ptr` 表示一个指针可能被多次引用，也就是存在着共享的关系。使用时应该使用 `std::shared_ptr` 来生成一个指向对象的 `std::shared_ptr`。`std::shared_ptr` 允许拷贝，在使用时可以直接使用按值传递的方式来使用。
 
 `std::shared_ptr` 中内置了引用计数，当发生拷贝的时候就会给引用计数加一，析构函数则会减一。当引用计数为 0 说明这个指针已经无人使用了，就会调用对象的析构函数去释放内存。
 
