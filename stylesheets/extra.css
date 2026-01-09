@@ -1,0 +1,7 @@
+p {
+    text-align: justify;
+}
+
+code, a {
+    line-break: anywhere;
+}

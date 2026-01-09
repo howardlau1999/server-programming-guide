@@ -1,0 +1,3130 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://liuhaohua.com/server-programming-guide/basics/procedure/">
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-8.5.7">
+    
+    
+      
+        <title>编译过程概览 - 服务器编程新手入门 - Server Programming Guide</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.20d9efc8.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+
+  <script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-C7E0KYN4VG"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-C7E0KYN4VG",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-C7E0KYN4VG",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?e22bc81eba95d694372372b42adabdaf";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#从源代码到二进制" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+        <aside class="md-banner">
+          <div class="md-banner__inner md-grid md-typeset">
+            
+            
+<img class="twemoji" alt="🚧" src="https://twemoji.maxcdn.com/2/svg/1f6a7.svg" title=":constrution" /> 本文档还在编写中
+
+          </div>
+          
+        </aside>
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../.." title="服务器编程新手入门 - Server Programming Guide" class="md-header__button md-logo" aria-label="服务器编程新手入门 - Server Programming Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            服务器编程新手入门 - Server Programming Guide
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              编译过程概览
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent=""  aria-label="夜间模式"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="夜间模式" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3 3.19.09m3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95 2.06.05m-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31Z"/></svg>
+            </label>
+          
+        
+          
+          
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="" data-md-color-accent=""  aria-label="白天模式"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="白天模式" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5c-.84 0-1.65.15-2.39.42L12 2M3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29L3.34 7m.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14L3.36 17M20.65 7l-1.77 3.79a7.023 7.023 0 0 0-2.38-4.15l4.15.36m-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29L20.64 17M12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44L12 22Z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/howardlau1999/server-programming-guide/" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="服务器编程新手入门 - Server Programming Guide" class="md-nav__button md-logo" aria-label="服务器编程新手入门 - Server Programming Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    服务器编程新手入门 - Server Programming Guide
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/howardlau1999/server-programming-guide/" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          编译链接基础知识
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="编译链接基础知识" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          编译链接基础知识
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          编译过程概览
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        编译过程概览
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#预处理" class="md-nav__link">
+    预处理
+  </a>
+  
+    <nav class="md-nav" aria-label="预处理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#试试看" class="md-nav__link">
+    试试看
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#编译" class="md-nav__link">
+    编译
+  </a>
+  
+    <nav class="md-nav" aria-label="编译">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#试试看_1" class="md-nav__link">
+    试试看
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#汇编" class="md-nav__link">
+    汇编
+  </a>
+  
+    <nav class="md-nav" aria-label="汇编">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#试试看_2" class="md-nav__link">
+    试试看
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#链接" class="md-nav__link">
+    链接
+  </a>
+  
+    <nav class="md-nav" aria-label="链接">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#试试看_3" class="md-nav__link">
+    试试看
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#不同操作系统的知识迁移" class="md-nav__link">
+    不同操作系统的知识迁移
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#总结" class="md-nav__link">
+    总结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../static-dynamic-linkage/" class="md-nav__link">
+        静态链接与动态链接
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../loading/" class="md-nav__link">
+        程序的装载与运行
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hooks/" class="md-nav__link">
+        扩展知识：利用链接与加载覆盖程序函数
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cross-compilation/" class="md-nav__link">
+        扩展知识：交叉编译
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          构建系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="构建系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          构建系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build-system/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build-system/make/" class="md-nav__link">
+        Make
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build-system/ninja/" class="md-nav__link">
+        Ninja
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build-system/bazel/" class="md-nav__link">
+        Bazel
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build-system/xmake/" class="md-nav__link">
+        XMake
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build-system/build-cache/" class="md-nav__link">
+        编译缓存
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build-system/distributed-compiling/" class="md-nav__link">
+        分布式编译
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          元构建系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="元构建系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          元构建系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../meta-build-system/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../meta-build-system/autotools/" class="md-nav__link">
+        Autotools
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../meta-build-system/cmake/" class="md-nav__link">
+        CMake
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../meta-build-system/gn/" class="md-nav__link">
+        GN
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../meta-build-system/third-party-library/" class="md-nav__link">
+        在项目中使用第三方库
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          代码生成
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="代码生成" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          代码生成
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../codegen/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          编写测试
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="编写测试" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          编写测试
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../testing/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../testing/diff/" class="md-nav__link">
+        使用 diff 进行测试
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../testing/googletest/" class="md-nav__link">
+        使用 Google Test 进行测试
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          代码静态分析
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="代码静态分析" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          代码静态分析
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../static-analysis/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../static-analysis/format/" class="md-nav__link">
+        代码格式化
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../static-analysis/lint/" class="md-nav__link">
+        静态检查
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8" type="checkbox" id="__nav_8" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_8">
+          持续集成
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="持续集成" data-md-level="1">
+        <label class="md-nav__title" for="__nav_8">
+          <span class="md-nav__icon md-icon"></span>
+          持续集成
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ci/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ci/github-actions/" class="md-nav__link">
+        使用 Github Actions 进行持续集成
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_9" type="checkbox" id="__nav_9" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_9">
+          日志系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="日志系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_9">
+          <span class="md-nav__icon md-icon"></span>
+          日志系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../logging/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../logging/structured-logging/" class="md-nav__link">
+        结构化日志
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../logging/binary-logging/" class="md-nav__link">
+        二进制日志
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../logging/boost/" class="md-nav__link">
+        使用 Boost.Log
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_10" type="checkbox" id="__nav_10" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_10">
+          指标系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="指标系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_10">
+          <span class="md-nav__icon md-icon"></span>
+          指标系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metrics/prometheus/" class="md-nav__link">
+        使用 Prometheus 指标库
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11" type="checkbox" id="__nav_11" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11">
+          调试工具
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="调试工具" data-md-level="1">
+        <label class="md-nav__title" for="__nav_11">
+          <span class="md-nav__icon md-icon"></span>
+          调试工具
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../debugging/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../debugging/gdb/" class="md-nav__link">
+        gdb 调试工具
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../debugging/vscode/" class="md-nav__link">
+        配置 VS Code 调试
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../debugging/coredump/" class="md-nav__link">
+        调试内存转储文件
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_12" type="checkbox" id="__nav_12" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_12">
+          内存管理
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="内存管理" data-md-level="1">
+        <label class="md-nav__title" for="__nav_12">
+          <span class="md-nav__icon md-icon"></span>
+          内存管理
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../memory/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../memory/smart-pointer/" class="md-nav__link">
+        智能指针
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../memory/address-sanitizer/" class="md-nav__link">
+        AddressSanitizer 内存安全检测
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../memory/valgrind/" class="md-nav__link">
+        Valgrind 内存安全检测
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../memory/memory-pool/" class="md-nav__link">
+        内存池
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_13" type="checkbox" id="__nav_13" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_13">
+          进入并行编程世界
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="进入并行编程世界" data-md-level="1">
+        <label class="md-nav__title" for="__nav_13">
+          <span class="md-nav__icon md-icon"></span>
+          进入并行编程世界
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../parallel/multi-threading/" class="md-nav__link">
+        多线程编程
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../parallel/multi-processing/" class="md-nav__link">
+        多进程编程
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_13_3" type="checkbox" id="__nav_13_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_13_3">
+          实战
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="实战" data-md-level="2">
+        <label class="md-nav__title" for="__nav_13_3">
+          <span class="md-nav__icon md-icon"></span>
+          实战
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../parallel/practice/multi-threading-queue/" class="md-nav__link">
+        多线程共享队列
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../parallel/practice/multi-processing-queue/" class="md-nav__link">
+        多进程共享队列
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../parallel/practice/callback/" class="md-nav__link">
+        回调模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../parallel/practice/future/" class="md-nav__link">
+        Future 模型
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../parallel/practice/cancellation/" class="md-nav__link">
+        取消操作
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../parallel/practice/timeout/" class="md-nav__link">
+        操作超时
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../parallel/practice/thread-pool/" class="md-nav__link">
+        线程池
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../parallel/practice/process-pool/" class="md-nav__link">
+        进程池
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_14" type="checkbox" id="__nav_14" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_14">
+          网络编程 RPC 入门
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="网络编程 RPC 入门" data-md-level="1">
+        <label class="md-nav__title" for="__nav_14">
+          <span class="md-nav__icon md-icon"></span>
+          网络编程 RPC 入门
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../rpc/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../rpc/serialization/" class="md-nav__link">
+        序列化与反序列化
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../rpc/framework/" class="md-nav__link">
+        使用 RPC 框架
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../rpc/server/" class="md-nav__link">
+        编写服务端
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../rpc/client/" class="md-nav__link">
+        编写客户端
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_15" type="checkbox" id="__nav_15" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_15">
+          存储系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="存储系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_15">
+          <span class="md-nav__icon md-icon"></span>
+          存储系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../storage/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_15_2" type="checkbox" id="__nav_15_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_15_2">
+          存储模型
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="存储模型" data-md-level="2">
+        <label class="md-nav__title" for="__nav_15_2">
+          <span class="md-nav__icon md-icon"></span>
+          存储模型
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../storage/kv/" class="md-nav__link">
+        键值对 KV 存储
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../storage/rdbms/" class="md-nav__link">
+        关系型数据库
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../storage/object-storage/" class="md-nav__link">
+        对象存储
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../storage/custom/" class="md-nav__link">
+        其他存储模型
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_15_3" type="checkbox" id="__nav_15_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_15_3">
+          存储位置
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="存储位置" data-md-level="2">
+        <label class="md-nav__title" for="__nav_15_3">
+          <span class="md-nav__icon md-icon"></span>
+          存储位置
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../storage/local/" class="md-nav__link">
+        本地存储
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../storage/remote/" class="md-nav__link">
+        远程存储
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../storage/distributed/" class="md-nav__link">
+        分布式存储
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_16" type="checkbox" id="__nav_16" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_16">
+          服务器程序常见范式
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="服务器程序常见范式" data-md-level="1">
+        <label class="md-nav__title" for="__nav_16">
+          <span class="md-nav__icon md-icon"></span>
+          服务器程序常见范式
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../paradigms/system-design/" class="md-nav__link">
+        系统设计范式
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_16_2" type="checkbox" id="__nav_16_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_16_2">
+          编程范式
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="编程范式" data-md-level="2">
+        <label class="md-nav__title" for="__nav_16_2">
+          <span class="md-nav__icon md-icon"></span>
+          编程范式
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../paradigms/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../paradigms/config/" class="md-nav__link">
+        程序的运行配置
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../paradigms/ioc/" class="md-nav__link">
+        控制反转
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../paradigms/handlers/" class="md-nav__link">
+        注册请求处理器
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../paradigms/background/" class="md-nav__link">
+        启动后台服务
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../paradigms/listen/" class="md-nav__link">
+        创建监听端口监听请求
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../paradigms/plugin/" class="md-nav__link">
+        插件
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_17" type="checkbox" id="__nav_17" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_17">
+          编写文档
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="编写文档" data-md-level="1">
+        <label class="md-nav__title" for="__nav_17">
+          <span class="md-nav__icon md-icon"></span>
+          编写文档
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../documentation/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_18" type="checkbox" id="__nav_18" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_18">
+          部署上线
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="部署上线" data-md-level="1">
+        <label class="md-nav__title" for="__nav_18">
+          <span class="md-nav__icon md-icon"></span>
+          部署上线
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../deployment/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../deployment/packaging/" class="md-nav__link">
+        程序的打包
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../deployment/reverse-proxy/" class="md-nav__link">
+        反向代理
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../deployment/systemd/" class="md-nav__link">
+        systemd 部署
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../deployment/docker/" class="md-nav__link">
+        Docker 部署
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_19" type="checkbox" id="__nav_19" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_19">
+          与他人合作
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="与他人合作" data-md-level="1">
+        <label class="md-nav__title" for="__nav_19">
+          <span class="md-nav__icon md-icon"></span>
+          与他人合作
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../collaboration/getting-started-on-a-project/" class="md-nav__link">
+        快速上手项目
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_19_2" type="checkbox" id="__nav_19_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_19_2">
+          实际的 Git 场景
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="实际的 Git 场景" data-md-level="2">
+        <label class="md-nav__title" for="__nav_19_2">
+          <span class="md-nav__icon md-icon"></span>
+          实际的 Git 场景
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../collaboration/git-workflow/" class="md-nav__link">
+        概览
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../collaboration/git-workflow/resolve-conflicts/" class="md-nav__link">
+        解决代码合并冲突
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../collaboration/git-workflow/switching-branches/" class="md-nav__link">
+        高效地处理分支切换
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../collaboration/git-workflow/fork-and-multi-remote-repositories/" class="md-nav__link">
+        fork 与多远端仓库下的协作
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_20" type="checkbox" id="__nav_20" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_20">
+          附录
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="附录" data-md-level="1">
+        <label class="md-nav__title" for="__nav_20">
+          <span class="md-nav__icon md-icon"></span>
+          附录
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/build-env/" class="md-nav__link">
+        配置基本编程环境
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#预处理" class="md-nav__link">
+    预处理
+  </a>
+  
+    <nav class="md-nav" aria-label="预处理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#试试看" class="md-nav__link">
+    试试看
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#编译" class="md-nav__link">
+    编译
+  </a>
+  
+    <nav class="md-nav" aria-label="编译">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#试试看_1" class="md-nav__link">
+    试试看
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#汇编" class="md-nav__link">
+    汇编
+  </a>
+  
+    <nav class="md-nav" aria-label="汇编">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#试试看_2" class="md-nav__link">
+    试试看
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#链接" class="md-nav__link">
+    链接
+  </a>
+  
+    <nav class="md-nav" aria-label="链接">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#试试看_3" class="md-nav__link">
+    试试看
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#不同操作系统的知识迁移" class="md-nav__link">
+    不同操作系统的知识迁移
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#总结" class="md-nav__link">
+    总结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+  <div style="text-align: justify">
+    
+                  
+
+  <a href="https://github.com/howardlau1999/server-programming-guide/edit/master/docs/basics/procedure.md" title="编辑此页" class="md-content__button md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+<h1 id="从源代码到二进制">从源代码到二进制<a class="headerlink" href="#从源代码到二进制" title="Permanent link">&para;</a></h1>
+<p>首先来看一个简单的程序</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:1"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">hello.cpp</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">std</span><span class="p">;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Hello World!&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<p>我们都知道，我们只需要运行 <code>g++ hello.cpp</code> 就可以将这个 C++ 源代码文件编译为可执行文件 <code>a.out</code> 了。其实，<code>g++</code> 只是一个驱动程序（Driver），它背后发生了一系列复杂的操作，调用了许多不同的程序。</p>
+<h2 id="预处理">预处理<a class="headerlink" href="#预处理" title="Permanent link">&para;</a></h2>
+<p>在编译开始之前，预处理器会处理源文件中的宏定义（例如 <code class="highlight"><span class="cp">#define</span></code>、<code class="highlight"><span class="cp">#include</span></code>、<code class="highlight"><span class="cp">#ifdef</span></code> 等），对源代码进行展开或者替换。例如，对于 <code class="highlight"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span></code>，预处理器会直接将 <code>iostream</code> 这个文件原封不动地拷贝到源文件中。然而，我们的源代码目录中并没有 <code>iostream</code> 这个文件，预处理器是怎么知道去哪里查找这个文件呢？</p>
+<p>实际上，预处理器并不知道我们的头文件都在哪里，需要我们手动提供包含路径（Include Path）。对于 <code>g++</code> 而言，就是 <code>-I</code> 选项。预处理器会在我们提供的路径中依次搜索，直到找到头文件为止。当然，像 <code>iostream</code> 这种常用的系统头文件，如果每次都需要我们手动指定查找目录，将会非常繁琐，所以 <code>g++</code> 已经内置了许多常用的包含路径，同时，包含路径默认还会包括源文件所在的目录。</p>
+<p>这一步的输出是经过宏展开之后的源代码文件，并不是所有语言都像 C/C++ 一样有类似文本替换的预处理步骤。</p>
+<details class="note" open="open">
+<summary>Note</summary>
+<p>在 C/C++ 中，预处理程序是 <code>cpp</code>，全称是 <strong>C</strong> <strong>P</strong>re<strong>P</strong>rocessor。可以运行 <code>cpp hello.cpp</code> 查看预处理器的输出。输出可能比较长，可以将输出重定向到一个文件方便查看。</p>
+</details>
+<details class="info" open="open">
+<summary>Info</summary>
+<p>使用 <code>-E</code> 选项，可以使 <code>g++</code> 只输出预处理结果而不进行进一步的编译。可以运行 <code>g++ -E hello.cpp</code> 查看输出，和直接运行 <code>cpp</code> 的结果比较。</p>
+</details>
+<h3 id="试试看">试试看<a class="headerlink" href="#试试看" title="Permanent link">&para;</a></h3>
+<p>下面我们来试试看如果包含路径不在默认提供的范围里，我们应当如何让预处理器找到文件。首先，创建两个文件夹，分别是 <code>src</code> 和 <code>include</code>。在里面分别放入以下文件：</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">src/a.cpp</label><label for="__tabbed_2_2">include/a.h</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;a.h&quot;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<p>首先我们直接运行 <code>g++ -E src/a.cpp</code>，可以看到，这时候预处理器表示自己找不到 <code>a.h</code> <img alt="🤔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.0.3/assets/svg/1f914.svg" title=":thinking:" />：</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>g++<span class="w"> </span>-E<span class="w"> </span>src/a.cpp
+<span class="c1"># 1 &quot;src/a.cpp&quot;</span>
+<span class="c1"># 1 &quot;&lt;built-in&gt;&quot;</span>
+<span class="c1"># 1 &quot;&lt;command-line&gt;&quot;</span>
+<span class="c1"># 1 &quot;/usr/include/stdc-predef.h&quot; 1 3 4</span>
+<span class="c1"># 1 &quot;&lt;command-line&gt;&quot; 2</span>
+<span class="c1"># 1 &quot;src/a.cpp&quot;</span>
+src/a.cpp:1:10:<span class="w"> </span>fatal<span class="w"> </span>error:<span class="w"> </span>a.h:<span class="w"> </span>No<span class="w"> </span>such<span class="w"> </span>file<span class="w"> </span>or<span class="w"> </span>directory
+<span class="w">    </span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="c1">#include &quot;a.h&quot;</span>
+<span class="w">      </span><span class="p">|</span><span class="w">          </span>^~~~~
+compilation<span class="w"> </span>terminated.
+</code></pre></div>
+<p>这时，就需要我们通过 <code>-I</code> 选项额外提供查找目录。这时候预处理器就知道去哪里找头文件了，并且 <code>a.h</code> 中的内容也被正确地复制进来了<img alt="😆" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.0.3/assets/svg/1f606.svg" title=":laughing:" />。</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>g++<span class="w"> </span>-E<span class="w"> </span>-Iinclude<span class="w"> </span>src/a.cpp
+<span class="c1"># 1 &quot;src/a.cpp&quot;</span>
+<span class="c1"># 1 &quot;&lt;built-in&gt;&quot;</span>
+<span class="c1"># 1 &quot;&lt;command-line&gt;&quot;</span>
+<span class="c1"># 1 &quot;/usr/include/stdc-predef.h&quot; 1 3 4</span>
+<span class="c1"># 1 &quot;&lt;command-line&gt;&quot; 2</span>
+<span class="c1"># 1 &quot;src/a.cpp&quot;</span>
+<span class="c1"># 1 &quot;include/a.h&quot; 1</span>
+int<span class="w"> </span><span class="nv">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">;</span>
+<span class="c1"># 2 &quot;src/a.cpp&quot; 2</span>
+
+int<span class="w"> </span>main<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span>a<span class="p">;</span>
+<span class="o">}</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>如果需要指定多个查找目录，需要提供多个 <code>-I</code> 选项，预处理器会依次查找。例如 <code>g++ -Iinclude1 -Iinclude2</code>。</p>
+</div>
+<h2 id="编译">编译<a class="headerlink" href="#编译" title="Permanent link">&para;</a></h2>
+<p>源文件经过预处理后，便可以调用编译器对源文件进行编译了。简单来讲，每一个 <code>.cpp</code> 文件可以被称为编译单元（Compilation Unit）。每一个编译单元都可以独立进行编译。编译器的工作是解析源文件，经过词法分析、语法分析、中间代码生成、代码优化等一系列复杂的操作，最终生成一个目标平台的汇编文件。</p>
+<p>这一步的输出是汇编文件，不同平台所使用的汇编语言不一样，这里以 <code>x86-64</code> 平台为例。</p>
+<details class="note" open="open">
+<summary>Note</summary>
+<p><code>g++</code> 所使用的 C++ 编译器为 <code>cc1plus</code>，这个程序并不在默认的 <code>PATH</code> 中，而是在库文件中。如果你使用的是 <code>g++</code> 9，那么它就在 <code>/usr/lib/gcc/x86_64-linux-gnu/9/cc1plus</code>。</p>
+</details>
+<h3 id="试试看_1">试试看<a class="headerlink" href="#试试看_1" title="Permanent link">&para;</a></h3>
+<p>我们首先将之前的 <code>hello.cpp</code> 进行预处理，保存到 <code>hello.preprocessed.cpp</code> 中，然后调用 <code>cc1plus</code> 将 <code>hello.preprocessed.cpp</code> 编译到汇编文件 <code>hello.preprocessed.s</code>。</p>
+<details class="note" open="open">
+<summary>Note</summary>
+<p>如果你找不到 <code>cc1plus</code>，可以使用 <code>-S</code> 选项，<code>g++</code> 会帮我们预处理好文件，然后编译，并输出一个汇编文件后便停止编译过程。也就是说，我们可以将下面两个命令用 <code>g++ -S hello.cpp -o hello.preprocessed.s</code> 代替。</p>
+</details>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>cpp<span class="w"> </span>hello.cpp<span class="w"> </span>hello.preprocessed.cpp
+$<span class="w"> </span>/usr/lib/gcc/x86_64-linux-gnu/9/cc1plus<span class="w"> </span>hello.preprocessed.cpp
+<span class="c1"># ... 省略很多输出</span>
+Analyzing<span class="w"> </span>compilation<span class="w"> </span>unit
+Performing<span class="w"> </span>interprocedural<span class="w"> </span>optimizations
+<span class="w"> </span>&lt;*free_lang_data&gt;<span class="w"> </span>&lt;visibility&gt;<span class="w"> </span>&lt;build_ssa_passes&gt;<span class="w"> </span>&lt;opt_local_passes&gt;<span class="w"> </span>&lt;remove_symbols&gt;<span class="w"> </span>&lt;targetclone&gt;<span class="w"> </span>&lt;free-fnsummary&gt;Streaming<span class="w"> </span>LTO
+<span class="w"> </span>&lt;whole-program&gt;<span class="w"> </span>&lt;hsa&gt;<span class="w"> </span>&lt;fnsummary&gt;<span class="w"> </span>&lt;inline&gt;<span class="w"> </span>&lt;free-fnsummary&gt;<span class="w"> </span>&lt;single-use&gt;<span class="w"> </span>&lt;comdats&gt;Assembling<span class="w"> </span>functions:
+<span class="w"> </span>&lt;materialize-all-clones&gt;<span class="w"> </span>&lt;simdclone&gt;<span class="w"> </span>int<span class="w"> </span>main<span class="o">()</span><span class="w"> </span>void<span class="w"> </span>__static_initialization_and_destruction_0<span class="o">(</span>int,<span class="w"> </span>int<span class="o">)</span><span class="w"> </span>void<span class="w"> </span>_GLOBAL__sub_I_main<span class="o">()</span>
+Time<span class="w"> </span>variable<span class="w">                                   </span>usr<span class="w">           </span>sys<span class="w">          </span>wall<span class="w">               </span>GGC
+<span class="w"> </span>phase<span class="w"> </span>setup<span class="w">                        </span>:<span class="w">   </span><span class="m">0</span>.00<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">0</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.00<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">0</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.01<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">2</span>%<span class="o">)</span><span class="w">    </span><span class="m">1471</span><span class="w"> </span>kB<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">5</span>%<span class="o">)</span>
+<span class="w"> </span>phase<span class="w"> </span>parsing<span class="w">                      </span>:<span class="w">   </span><span class="m">0</span>.19<span class="w"> </span><span class="o">(</span><span class="w"> </span><span class="m">86</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.24<span class="w"> </span><span class="o">(</span><span class="w"> </span><span class="m">77</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.48<span class="w"> </span><span class="o">(</span><span class="w"> </span><span class="m">81</span>%<span class="o">)</span><span class="w">   </span><span class="m">25530</span><span class="w"> </span>kB<span class="w"> </span><span class="o">(</span><span class="w"> </span><span class="m">83</span>%<span class="o">)</span>
+<span class="w"> </span>phase<span class="w"> </span>lang.<span class="w"> </span>deferred<span class="w">               </span>:<span class="w">   </span><span class="m">0</span>.02<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">9</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.06<span class="w"> </span><span class="o">(</span><span class="w"> </span><span class="m">19</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.08<span class="w"> </span><span class="o">(</span><span class="w"> </span><span class="m">14</span>%<span class="o">)</span><span class="w">    </span><span class="m">3548</span><span class="w"> </span>kB<span class="w"> </span><span class="o">(</span><span class="w"> </span><span class="m">12</span>%<span class="o">)</span>
+<span class="w"> </span>phase<span class="w"> </span>opt<span class="w"> </span>and<span class="w"> </span>generate<span class="w">             </span>:<span class="w">   </span><span class="m">0</span>.01<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">5</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.01<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">3</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.02<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">3</span>%<span class="o">)</span><span class="w">     </span><span class="m">289</span><span class="w"> </span>kB<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">1</span>%<span class="o">)</span>
+<span class="w"> </span><span class="p">|</span>name<span class="w"> </span>lookup<span class="w">                       </span>:<span class="w">   </span><span class="m">0</span>.00<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">0</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.05<span class="w"> </span><span class="o">(</span><span class="w"> </span><span class="m">16</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.05<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">8</span>%<span class="o">)</span><span class="w">    </span><span class="m">1463</span><span class="w"> </span>kB<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">5</span>%<span class="o">)</span>
+<span class="w"> </span><span class="p">|</span>overload<span class="w"> </span>resolution<span class="w">               </span>:<span class="w">   </span><span class="m">0</span>.02<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">9</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.04<span class="w"> </span><span class="o">(</span><span class="w"> </span><span class="m">13</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.02<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">3</span>%<span class="o">)</span><span class="w">    </span><span class="m">1788</span><span class="w"> </span>kB<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">6</span>%<span class="o">)</span>
+<span class="w"> </span>callgraph<span class="w"> </span>optimization<span class="w">             </span>:<span class="w">   </span><span class="m">0</span>.00<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">0</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.00<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">0</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.01<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">2</span>%<span class="o">)</span><span class="w">       </span><span class="m">0</span><span class="w"> </span>kB<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">0</span>%<span class="o">)</span>
+<span class="w"> </span>ipa<span class="w"> </span>inlining<span class="w"> </span>heuristics<span class="w">            </span>:<span class="w">   </span><span class="m">0</span>.00<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">0</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.01<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">3</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.00<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">0</span>%<span class="o">)</span><span class="w">       </span><span class="m">0</span><span class="w"> </span>kB<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">0</span>%<span class="o">)</span>
+<span class="w"> </span>preprocessing<span class="w">                      </span>:<span class="w">   </span><span class="m">0</span>.01<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">5</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.02<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">6</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.04<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">7</span>%<span class="o">)</span><span class="w">     </span><span class="m">377</span><span class="w"> </span>kB<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">1</span>%<span class="o">)</span>
+<span class="w"> </span>parser<span class="w"> </span><span class="o">(</span>global<span class="o">)</span><span class="w">                    </span>:<span class="w">   </span><span class="m">0</span>.04<span class="w"> </span><span class="o">(</span><span class="w"> </span><span class="m">18</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.07<span class="w"> </span><span class="o">(</span><span class="w"> </span><span class="m">23</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.18<span class="w"> </span><span class="o">(</span><span class="w"> </span><span class="m">31</span>%<span class="o">)</span><span class="w">    </span><span class="m">8434</span><span class="w"> </span>kB<span class="w"> </span><span class="o">(</span><span class="w"> </span><span class="m">27</span>%<span class="o">)</span>
+<span class="w"> </span>parser<span class="w"> </span>struct<span class="w"> </span>body<span class="w">                 </span>:<span class="w">   </span><span class="m">0</span>.04<span class="w"> </span><span class="o">(</span><span class="w"> </span><span class="m">18</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.02<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">6</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.05<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">8</span>%<span class="o">)</span><span class="w">    </span><span class="m">5710</span><span class="w"> </span>kB<span class="w"> </span><span class="o">(</span><span class="w"> </span><span class="m">19</span>%<span class="o">)</span>
+<span class="w"> </span>parser<span class="w"> </span><span class="k">function</span><span class="w"> </span>body<span class="w">               </span>:<span class="w">   </span><span class="m">0</span>.03<span class="w"> </span><span class="o">(</span><span class="w"> </span><span class="m">14</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.02<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">6</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.00<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">0</span>%<span class="o">)</span><span class="w">    </span><span class="m">1043</span><span class="w"> </span>kB<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">3</span>%<span class="o">)</span>
+<span class="w"> </span>parser<span class="w"> </span>inl.<span class="w"> </span>func.<span class="w"> </span>body<span class="w">             </span>:<span class="w">   </span><span class="m">0</span>.02<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">9</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.00<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">0</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.01<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">2</span>%<span class="o">)</span><span class="w">    </span><span class="m">1395</span><span class="w"> </span>kB<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">5</span>%<span class="o">)</span>
+<span class="w"> </span>parser<span class="w"> </span>inl.<span class="w"> </span>meth.<span class="w"> </span>body<span class="w">             </span>:<span class="w">   </span><span class="m">0</span>.02<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">9</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.06<span class="w"> </span><span class="o">(</span><span class="w"> </span><span class="m">19</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.11<span class="w"> </span><span class="o">(</span><span class="w"> </span><span class="m">19</span>%<span class="o">)</span><span class="w">    </span><span class="m">2446</span><span class="w"> </span>kB<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">8</span>%<span class="o">)</span>
+<span class="w"> </span>template<span class="w"> </span>instantiation<span class="w">             </span>:<span class="w">   </span><span class="m">0</span>.05<span class="w"> </span><span class="o">(</span><span class="w"> </span><span class="m">23</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.11<span class="w"> </span><span class="o">(</span><span class="w"> </span><span class="m">35</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.17<span class="w"> </span><span class="o">(</span><span class="w"> </span><span class="m">29</span>%<span class="o">)</span><span class="w">    </span><span class="m">9572</span><span class="w"> </span>kB<span class="w"> </span><span class="o">(</span><span class="w"> </span><span class="m">31</span>%<span class="o">)</span>
+<span class="w"> </span>integrated<span class="w"> </span>RA<span class="w">                      </span>:<span class="w">   </span><span class="m">0</span>.01<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">5</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.00<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">0</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.00<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">0</span>%<span class="o">)</span><span class="w">      </span><span class="m">72</span><span class="w"> </span>kB<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">0</span>%<span class="o">)</span>
+<span class="w"> </span>thread<span class="w"> </span>pro-<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span>epilogue<span class="w">             </span>:<span class="w">   </span><span class="m">0</span>.00<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">0</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.00<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">0</span>%<span class="o">)</span><span class="w">   </span><span class="m">0</span>.01<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">2</span>%<span class="o">)</span><span class="w">       </span><span class="m">4</span><span class="w"> </span>kB<span class="w"> </span><span class="o">(</span><span class="w">  </span><span class="m">0</span>%<span class="o">)</span>
+<span class="w"> </span>TOTAL<span class="w">                              </span>:<span class="w">   </span><span class="m">0</span>.22<span class="w">          </span><span class="m">0</span>.31<span class="w">          </span><span class="m">0</span>.59<span class="w">          </span><span class="m">30848</span><span class="w"> </span>kB
+$<span class="w"> </span>ls
+hello.cpp<span class="w">  </span>hello.preprocessed.cpp<span class="w">  </span>hello.preprocessed.s
+</code></pre></div>
+<p>可以看到 <code>cc1plus</code> 输出了编译后的汇编文件 <code>hello.preprocessed.s</code>。可以打开来查看其中的内容。</p>
+<details class="note" open="open">
+<summary>扩展知识 - C++ 命名混淆（Mangling）</summary>
+<p>在汇编语言文件中，你可能会看到类似 <code>_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_</code> 的奇怪符号。这是 C++ 编译器对函数进行命名混淆后的结果。C++ 中有函数重载，以及命名空间等 C 所没有的语言特性。为了实现这些特性，C++ 编译器会将函数的命名空间，以及调用参数的类型都编码到函数符号中，也就是相当于为每一个函数都创建了新的名字。这样就能区分开不同命名空间以及不同函数重载的同名函数了。</p>
+<p>需要注意的是，如何混淆一个函数的名称完全取决于编译器，C++ 标准中并没有规定编译器应当如何混淆函数名称。编译器只需要保证能够区分同名函数的不同重载即可。C++ 只规定了不允许只通过不同的返回值类型来重载函数，所以编译器<strong>可能</strong>会在混淆的时候省略返回值类型，也有可能不省略。</p>
+<p>系统中也自带了 <code>c++filt</code> 这个工具来帮助我们还原混淆符号对应的函数签名。我们运行 <code>c++filt</code> 后，输入混淆后的名称并回车，就能得到原始函数签名了。</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>c++filt
+_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc
+std::basic_ostream&lt;char,<span class="w"> </span>std::char_traits&lt;char&gt;<span class="w"> </span>&gt;<span class="p">&amp;</span><span class="w"> </span>std::operator&lt;&lt;<span class="w"> </span>&lt;std::char_traits&lt;char&gt;<span class="w"> </span>&gt;<span class="o">(</span>std::basic_ostream&lt;char,<span class="w"> </span>std::char_traits&lt;char&gt;<span class="w"> </span>&gt;<span class="p">&amp;</span>,<span class="w"> </span>char<span class="w"> </span>const*<span class="o">)</span>
+_ZNSt8ios_base4InitC1Ev
+std::ios_base::Init::Init<span class="o">()</span>
+</code></pre></div>
+<p>可以看到编译器有时候会省略返回值类型有时候不会。</p>
+</details>
+<h2 id="汇编">汇编<a class="headerlink" href="#汇编" title="Permanent link">&para;</a></h2>
+<p>在得到汇编文件后，就可以使用汇编器将汇编文件汇编为目标文件了（Object File）。汇编器的工作简单很多，只需要翻译汇编文件中的指令，输出对应的二进制机器指令，并将指令组装为操作系统的目标文件格式即可。</p>
+<p>这一步的输出是对应平台的二进制目标文件，其中包含了函数符号，以及对应的二进制机器码。</p>
+<details class="note" open="open">
+<summary>Note</summary>
+<p>汇编器的程序名字是 <code>as</code>。</p>
+</details>
+<h3 id="试试看_2">试试看<a class="headerlink" href="#试试看_2" title="Permanent link">&para;</a></h3>
+<p>我们使用 <code>as</code> 命令，将编译器输出的汇编文件汇编到目标文件。</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>as<span class="w"> </span>hello.preprocessed.s<span class="w"> </span>-o<span class="w"> </span>hello.preprocessed.o
+$<span class="w"> </span>ls
+hello.cpp<span class="w">  </span>hello.preprocessed.cpp<span class="w">  </span>hello.preprocessed.o<span class="w">  </span>hello.preprocessed.s
+</code></pre></div>
+<details class="note" open="open">
+<summary>Note</summary>
+<p>使用 <code>-c</code> 选项，可以让 <code>g++</code> 只生成目标文件后，就停止编译过程。例如，我们可以使用 <code>g++ -c hello.cpp -o hello.preprocessed.o</code> 得到同样的目标文件。</p>
+</details>
+<details class="note" open="open">
+<summary>使用 <code>file</code> 命令查看文件类型</summary>
+<p>我们可以使用 <code>file</code> 命令，来查看一个文件的类型。
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>file<span class="w"> </span>hello.preprocessed.o
+hello.preprocessed.o:<span class="w"> </span>ELF<span class="w"> </span><span class="m">64</span>-bit<span class="w"> </span>LSB<span class="w"> </span>relocatable,<span class="w"> </span>x86-64,<span class="w"> </span>version<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">(</span>SYSV<span class="o">)</span>,<span class="w"> </span>not<span class="w"> </span>stripped
+</code></pre></div>
+可以看到这是一个 <code>ELF</code> 文件。</p>
+</details>
+<details class="note" open="open">
+<summary>使用 <code>readelf</code> 命令查看一个 ELF 文件的信息</summary>
+<p>我们可以使用 <code>readelf</code> 命令，来查看一个 ELF 文件的文件信息。
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>readelf<span class="w"> </span>-a<span class="w"> </span>hello.preprocessed.o
+ELF<span class="w"> </span>Header:
+<span class="w">    </span>Magic:<span class="w">   </span>7f<span class="w"> </span><span class="m">45</span><span class="w"> </span>4c<span class="w"> </span><span class="m">46</span><span class="w"> </span><span class="m">02</span><span class="w"> </span><span class="m">01</span><span class="w"> </span><span class="m">01</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span>
+<span class="w">    </span>Class:<span class="w">                             </span>ELF64
+<span class="w">    </span>Data:<span class="w">                              </span><span class="m">2</span><span class="err">&#39;</span>s<span class="w"> </span>complement,<span class="w"> </span>little<span class="w"> </span>endian
+<span class="w">    </span>Version:<span class="w">                           </span><span class="m">1</span><span class="w"> </span><span class="o">(</span>current<span class="o">)</span>
+<span class="w">    </span>OS/ABI:<span class="w">                            </span>UNIX<span class="w"> </span>-<span class="w"> </span>System<span class="w"> </span>V
+<span class="w">    </span>ABI<span class="w"> </span>Version:<span class="w">                       </span><span class="m">0</span>
+<span class="w">    </span>Type:<span class="w">                              </span>REL<span class="w"> </span><span class="o">(</span>Relocatable<span class="w"> </span>file<span class="o">)</span>
+<span class="w">    </span>Machine:<span class="w">                           </span>Advanced<span class="w"> </span>Micro<span class="w"> </span>Devices<span class="w"> </span>X86-64
+<span class="w">    </span>Version:<span class="w">                           </span>0x1
+<span class="w">    </span>Entry<span class="w"> </span>point<span class="w"> </span>address:<span class="w">               </span>0x0
+<span class="w">    </span>Start<span class="w"> </span>of<span class="w"> </span>program<span class="w"> </span>headers:<span class="w">          </span><span class="m">0</span><span class="w"> </span><span class="o">(</span>bytes<span class="w"> </span>into<span class="w"> </span>file<span class="o">)</span>
+<span class="w">    </span>Start<span class="w"> </span>of<span class="w"> </span>section<span class="w"> </span>headers:<span class="w">          </span><span class="m">1832</span><span class="w"> </span><span class="o">(</span>bytes<span class="w"> </span>into<span class="w"> </span>file<span class="o">)</span>
+<span class="w">    </span>Flags:<span class="w">                             </span>0x0
+<span class="w">    </span>Size<span class="w"> </span>of<span class="w"> </span>this<span class="w"> </span>header:<span class="w">               </span><span class="m">64</span><span class="w"> </span><span class="o">(</span>bytes<span class="o">)</span>
+<span class="w">    </span>Size<span class="w"> </span>of<span class="w"> </span>program<span class="w"> </span>headers:<span class="w">           </span><span class="m">0</span><span class="w"> </span><span class="o">(</span>bytes<span class="o">)</span>
+<span class="w">    </span>Number<span class="w"> </span>of<span class="w"> </span>program<span class="w"> </span>headers:<span class="w">         </span><span class="m">0</span>
+<span class="w">    </span>Size<span class="w"> </span>of<span class="w"> </span>section<span class="w"> </span>headers:<span class="w">           </span><span class="m">64</span><span class="w"> </span><span class="o">(</span>bytes<span class="o">)</span>
+<span class="w">    </span>Number<span class="w"> </span>of<span class="w"> </span>section<span class="w"> </span>headers:<span class="w">         </span><span class="m">15</span>
+<span class="w">    </span>Section<span class="w"> </span>header<span class="w"> </span>string<span class="w"> </span>table<span class="w"> </span>index:<span class="w"> </span><span class="m">14</span>
+
+Section<span class="w"> </span>Headers:
+<span class="w">    </span><span class="o">[</span>Nr<span class="o">]</span><span class="w"> </span>Name<span class="w">              </span>Type<span class="w">             </span>Address<span class="w">           </span>Offset
+<span class="w">        </span>Size<span class="w">              </span>EntSize<span class="w">          </span>Flags<span class="w">  </span>Link<span class="w">  </span>Info<span class="w">  </span>Align
+<span class="w">    </span><span class="o">[</span><span class="w"> </span><span class="m">0</span><span class="o">]</span><span class="w">                   </span>NULL<span class="w">             </span><span class="m">0000000000000000</span><span class="w">  </span><span class="m">00000000</span>
+<span class="w">        </span><span class="m">0000000000000000</span><span class="w">  </span><span class="m">0000000000000000</span><span class="w">           </span><span class="m">0</span><span class="w">     </span><span class="m">0</span><span class="w">     </span><span class="m">0</span>
+<span class="w">    </span><span class="o">[</span><span class="w"> </span><span class="m">1</span><span class="o">]</span><span class="w"> </span>.text<span class="w">             </span>PROGBITS<span class="w">         </span><span class="m">0000000000000000</span><span class="w">  </span><span class="m">00000040</span>
+<span class="w">        </span><span class="m">0000000000000091</span><span class="w">  </span><span class="m">0000000000000000</span><span class="w">  </span>AX<span class="w">       </span><span class="m">0</span><span class="w">     </span><span class="m">0</span><span class="w">     </span><span class="m">1</span>
+<span class="w">    </span><span class="o">[</span><span class="w"> </span><span class="m">2</span><span class="o">]</span><span class="w"> </span>.rela.text<span class="w">        </span>RELA<span class="w">             </span><span class="m">0000000000000000</span><span class="w">  </span><span class="m">00000548</span>
+<span class="w">        </span><span class="m">0000000000000108</span><span class="w">  </span><span class="m">0000000000000018</span><span class="w">   </span>I<span class="w">      </span><span class="m">12</span><span class="w">     </span><span class="m">1</span><span class="w">     </span><span class="m">8</span>
+<span class="w">    </span><span class="o">[</span><span class="w"> </span><span class="m">3</span><span class="o">]</span><span class="w"> </span>.data<span class="w">             </span>PROGBITS<span class="w">         </span><span class="m">0000000000000000</span><span class="w">  </span>000000d1
+<span class="c1"># ...省略大段输出</span>
+</code></pre></div></p>
+</details>
+<details class="note" open="open">
+<summary>使用 <code>nm</code> 命令输出目标文件中的符号</summary>
+<p>我们可以使用 <code>nm</code> 命令，来查看一个二进制目标文件中包含哪些符号。
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>nm<span class="w"> </span>hello.preprocessed.o
+<span class="w">                 </span>U<span class="w"> </span>__cxa_atexit
+<span class="w">                 </span>U<span class="w"> </span>__dso_handle
+<span class="w">                 </span>U<span class="w"> </span>_GLOBAL_OFFSET_TABLE_
+000000000000007c<span class="w"> </span>t<span class="w"> </span>_GLOBAL__sub_I_main
+<span class="m">0000000000000000</span><span class="w"> </span>T<span class="w"> </span>main
+<span class="m">0000000000000033</span><span class="w"> </span>t<span class="w"> </span>_Z41__static_initialization_and_destruction_0ii
+<span class="w">                 </span>U<span class="w"> </span>_ZNSolsEPFRSoS_E
+<span class="w">                 </span>U<span class="w"> </span>_ZNSt8ios_base4InitC1Ev
+<span class="w">                 </span>U<span class="w"> </span>_ZNSt8ios_base4InitD1Ev
+<span class="w">                 </span>U<span class="w"> </span>_ZSt4cout
+<span class="w">                 </span>U<span class="w"> </span>_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_
+<span class="m">0000000000000000</span><span class="w"> </span>r<span class="w"> </span>_ZStL19piecewise_construct
+<span class="m">0000000000000000</span><span class="w"> </span>b<span class="w"> </span>_ZStL8__ioinit
+<span class="w">                 </span>U<span class="w"> </span>_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc
+</code></pre></div></p>
+</details>
+<h2 id="链接">链接<a class="headerlink" href="#链接" title="Permanent link">&para;</a></h2>
+<p>得到目标文件后，我们还不能执行这个文件。这是因为目标文件往往需要依赖本身没有的外部函数实现。如果我们使用 <code>nm</code> 命令查看我们的目标文件，就会发现很多 <code>U</code>，这就意味着这些符号在当前目标文件找不到定义。同时，为了执行程序，还有许多需要和操作系统交互的函数，例如分配内存、输入输出等。这些我们的目标文件通通都没有。为了能让目标文件中的程序运行起来，还需要最后一步：链接。</p>
+<p>链接就是将许多目标文件合并起来，最终输出一个可执行的文件。</p>
+<details class="note" open="open">
+<summary>Note</summary>
+<p>链接器程序名字是 <code>ld</code>。</p>
+</details>
+<h3 id="试试看_3">试试看<a class="headerlink" href="#试试看_3" title="Permanent link">&para;</a></h3>
+<p>接下来你将看到本章最复杂的一条命令，不过不要害怕。</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>ld<span class="w"> </span>-static<span class="w"> </span>hello.preprocessed.o<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>/usr/lib/x86_64-linux-gnu/crt1.o<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>/usr/lib/x86_64-linux-gnu/crti.o<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>/usr/lib/gcc/x86_64-linux-gnu/9/crtbeginT.o<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-L/usr/lib/gcc/x86_64-linux-gnu/9<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-L/usr/lib/x86_64-linux-gnu<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-L/lib/x86_64-linux-gnu<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-L/lib<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-L/usr/lib<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-lstdc++<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-lm<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--start-group<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-lgcc<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-lgcc_eh<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-lc<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--end-group<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>/usr/lib/gcc/x86_64-linux-gnu/9/crtend.o<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>/usr/lib/x86_64-linux-gnu/crtn.o
+$<span class="w"> </span>ls
+a.out<span class="w">  </span>hello.cpp<span class="w">  </span>hello.preprocessed.cpp<span class="w">  </span>hello.preprocessed.o<span class="w">  </span>hello.preprocessed.s
+$<span class="w"> </span>./a.out
+Hello,<span class="w"> </span>world
+</code></pre></div>
+<p>可以看到，经过复杂的链接过程，我们终于得到了熟悉的可执行文件。</p>
+<details class="note" open="open">
+<summary><code>a.out</code> 的由来</summary>
+<p><code>a.out</code> 这个名字是起源于古老的 Unix 系统，是 "assembler output" 的缩写，来自于 Ken Thompson 的 PDP-7 汇编器。<code>a.out</code> 也是一种二进制格式，由于欠缺比较多的功能，逐渐被 ELF、PE 等格式替代。早期 Linux 系统也支持 <code>a.out</code> 文件格式，现在的 Linux 系统常用的都是 ELF 格式的二进制，而 <code>a.out</code> 格式在 Linux 内核 5.1 版本中被正式移除支持。而 <code>a.out</code> 这个名字仍然被用来作为编译器产物的默认名称。更多故事可以参考<a href="https://en.wikipedia.org/wiki/A.out">维基百科</a>。</p>
+</details>
+<p>调用 <code>ld</code> 命令，只需要将我们希望链接的目标文件一股脑传进去就可以了。而一些系统库并不是以 <code>.o</code> 的目标文件形式存放的，而是以 <code>.a</code> 文件形式存放的。<code>.a</code> 文件其实就是将许多 <code>.o</code> 文件拼起来的文件。<code>.a</code> 文件往往都以 <code>lib***.a</code> 的形式命名。如果我们传参 <code>-labc</code>，那么链接器就会去寻找 <code>libabc.a</code> 这个文件。这个相当于是一个捷径。</p>
+<p>链接器和预处理器一样，并不知道 <code>.a</code> 文件都在哪，所以需要我们通过 <code>-L</code> 选项来指定库路径（Library Path）。配合上面的 <code>-l</code>，链接器就能找到 <code>.a</code> 文件并链接起来了。</p>
+<p>一些链接器为了提高效率，只会保留参数列表前面的目标文件中未定义的函数符号，并试图在后面的目标文件中找到这些未定义符号。</p>
+<p>比如说，我们有 <code>a.o</code>、<code>b.o</code> 和 <code>c.o</code> 三个目标文件，其中只有 <code>c.o</code> 存在未定义的函数符号，那么假如我们调用 <code>ld a.o b.o c.o</code> 将会出现链接错误，即使 <code>a.o</code> 和 <code>b.o</code> 中含有 <code>c.o</code> 需要的符号定义。而是需要调用 <code>ld c.o a.o b.o</code>。</p>
+<p>当然，有时候我们不可避免地会写出循环引用的情况。例如 <code>a.o</code> 需要 <code>b.o</code> 的定义，<code>b.o</code> 需要 <code>c.o</code> 的定义，<code>c.o</code> 需要 <code>a.o</code> 的定义。此时我们无论如何调整链接顺序都不可能链接成功。所以，针对这种特殊情况，链接器提供了 <code>--start-group</code> 和 <code>--end-group</code> 这一对选项。位于这一对选项中的目标文件，链接器会不断地循环解决未定义符号，直到没有新的未定义符号可以被解决为止。当符号比较多的时候，可以想象这是一个很慢的过程，所以我们需要尽可能避免这种情况的发生。</p>
+<p>还有一个问题，链接器怎么知道程序应该从哪开始执行？实际上 <code>main</code> 函数并不是程序的真正入口。默认情况下，<code>ld</code> 会寻找 <code>_start</code> 符号，作为程序的起点。而这个符号，就包含在系统运行库当中。库当中的 <code>_start</code> 函数，最终会在初始化运行环境后，调用我们的 <code>main</code> 函数。</p>
+<details class="note" open="open">
+<summary>使用 <code>g++</code> 进行链接</summary>
+<p><code>g++</code> 调用时，会检查文件的类型，如果是目标文件，<code>g++</code> 会自动调用链接器。也就是说，直接调用 <code>g++ hello.preprocessed.o</code> 也可以得到最终的可执行文件。</p>
+</details>
+<details class="note" open="open">
+<summary>查看可执行文件和目标文件的区别</summary>
+<p><div class="highlight"><pre><span></span><code>$<span class="w"> </span>readelf<span class="w"> </span>-h<span class="w"> </span>a.out
+ELF<span class="w"> </span>Header:
+<span class="w">    </span>Magic:<span class="w">   </span>7f<span class="w"> </span><span class="m">45</span><span class="w"> </span>4c<span class="w"> </span><span class="m">46</span><span class="w"> </span><span class="m">02</span><span class="w"> </span><span class="m">01</span><span class="w"> </span><span class="m">01</span><span class="w"> </span><span class="m">03</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span>
+<span class="w">    </span>Class:<span class="w">                             </span>ELF64
+<span class="w">    </span>Data:<span class="w">                              </span><span class="m">2</span><span class="err">&#39;</span>s<span class="w"> </span>complement,<span class="w"> </span>little<span class="w"> </span>endian
+<span class="w">    </span>Version:<span class="w">                           </span><span class="m">1</span><span class="w"> </span><span class="o">(</span>current<span class="o">)</span>
+<span class="w">    </span>OS/ABI:<span class="w">                            </span>UNIX<span class="w"> </span>-<span class="w"> </span>GNU
+<span class="w">    </span>ABI<span class="w"> </span>Version:<span class="w">                       </span><span class="m">0</span>
+<span class="w">    </span>Type:<span class="w">                              </span>EXEC<span class="w"> </span><span class="o">(</span>Executable<span class="w"> </span>file<span class="o">)</span>
+<span class="w">    </span>Machine:<span class="w">                           </span>Advanced<span class="w"> </span>Micro<span class="w"> </span>Devices<span class="w"> </span>X86-64
+<span class="w">    </span>Version:<span class="w">                           </span>0x1
+<span class="w">    </span>Entry<span class="w"> </span>point<span class="w"> </span>address:<span class="w">               </span>0x404a90
+<span class="w">    </span>Start<span class="w"> </span>of<span class="w"> </span>program<span class="w"> </span>headers:<span class="w">          </span><span class="m">64</span><span class="w"> </span><span class="o">(</span>bytes<span class="w"> </span>into<span class="w"> </span>file<span class="o">)</span>
+<span class="w">    </span>Start<span class="w"> </span>of<span class="w"> </span>section<span class="w"> </span>headers:<span class="w">          </span><span class="m">2368032</span><span class="w"> </span><span class="o">(</span>bytes<span class="w"> </span>into<span class="w"> </span>file<span class="o">)</span>
+<span class="w">    </span>Flags:<span class="w">                             </span>0x0
+<span class="w">    </span>Size<span class="w"> </span>of<span class="w"> </span>this<span class="w"> </span>header:<span class="w">               </span><span class="m">64</span><span class="w"> </span><span class="o">(</span>bytes<span class="o">)</span>
+<span class="w">    </span>Size<span class="w"> </span>of<span class="w"> </span>program<span class="w"> </span>headers:<span class="w">           </span><span class="m">56</span><span class="w"> </span><span class="o">(</span>bytes<span class="o">)</span>
+<span class="w">    </span>Number<span class="w"> </span>of<span class="w"> </span>program<span class="w"> </span>headers:<span class="w">         </span><span class="m">8</span>
+<span class="w">    </span>Size<span class="w"> </span>of<span class="w"> </span>section<span class="w"> </span>headers:<span class="w">           </span><span class="m">64</span><span class="w"> </span><span class="o">(</span>bytes<span class="o">)</span>
+<span class="w">    </span>Number<span class="w"> </span>of<span class="w"> </span>section<span class="w"> </span>headers:<span class="w">         </span><span class="m">30</span>
+<span class="w">    </span>Section<span class="w"> </span>header<span class="w"> </span>string<span class="w"> </span>table<span class="w"> </span>index:<span class="w"> </span><span class="m">29</span>
+</code></pre></div>
+可以看到此时的 <code>Type</code> 变为可执行文件，同时多了一个 <code>Entry point address</code>，标志着程序的起点。</p>
+<p>我们使用 <code>nm</code> 命令，来查看这个地址对应的符号。</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>nm<span class="w"> </span>a.out<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>404a90
+0000000000404a90<span class="w"> </span>T<span class="w"> </span>_start
+</code></pre></div>
+<p>可以看到，程序入口并不是 <code>main</code> 函数，而是库所提供的 <code>_start</code> 函数。</p>
+</details>
+<h2 id="不同操作系统的知识迁移">不同操作系统的知识迁移<a class="headerlink" href="#不同操作系统的知识迁移" title="Permanent link">&para;</a></h2>
+<p>在不同的操作系统上，程序的编译链接过程是一样的，只是使用了不同的二进制存储格式，例如，Windows 使用 COFF 和 PE 格式存储库和可执行文件。不同的二进制格式虽然在细节上有所差别，但是保存的内容基本上都是一样的，例如程序的入口、程序的运行方式（比如 Windows 会在 PE 文件中标识一个程序是用图形界面运行还是命令行界面运行）、程序代码等。<a href="https://en.wikipedia.org/wiki/Comparison_of_executable_file_formats">这里</a>是不同操作系统使用的二进制程序格式对比。</p>
+<details class="note" open="open">
+<summary>查看 Windows 的二进制信息</summary>
+<p>Windows 上可以使用 DUMPBIN 程序来查看一个可执行文件的信息。要使用这个工具，可以单独下载，也可以安装 Visual Studio，然后启动 Developer PowerShell for VS 2019。</p>
+<p>Windows 上的编译器是 <code>cl</code>，如果你用的是 Developer Powershell 的话，可以用这个命令编译程序。使用 <code>g++</code> 命令编译也可以。</p>
+<div class="highlight"><pre><span></span><code><span class="p">&gt;</span> <span class="n">cl</span> <span class="p">/</span><span class="n">EHsc</span> <span class="p">.\</span><span class="n">hello</span><span class="p">.</span><span class="nb">cpp</span>
+<span class="n">Microsoft</span> <span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">C</span><span class="p">/</span><span class="n">C</span><span class="p">++</span> <span class="n">Optimizing</span> <span class="n">Compiler</span> <span class="n">Version</span> <span class="n">19</span><span class="p">.</span><span class="n">28</span><span class="p">.</span><span class="n">29337</span> <span class="k">for</span> <span class="n">x86</span>
+<span class="n">Copyright</span> <span class="p">(</span><span class="n">C</span><span class="p">)</span> <span class="n">Microsoft</span> <span class="n">Corporation</span><span class="p">.</span>  <span class="n">All</span> <span class="n">rights</span> <span class="n">reserved</span><span class="p">.</span>
+
+<span class="n">hello</span><span class="p">.</span><span class="nb">cpp</span>
+<span class="n">Microsoft</span> <span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Incremental</span> <span class="n">Linker</span> <span class="n">Version</span> <span class="n">14</span><span class="p">.</span><span class="n">28</span><span class="p">.</span><span class="n">29337</span><span class="p">.</span><span class="n">0</span>
+<span class="n">Copyright</span> <span class="p">(</span><span class="n">C</span><span class="p">)</span> <span class="n">Microsoft</span> <span class="n">Corporation</span><span class="p">.</span>  <span class="n">All</span> <span class="n">rights</span> <span class="n">reserved</span><span class="p">.</span>
+
+<span class="p">/</span><span class="n">out</span><span class="p">:</span><span class="n">hello</span><span class="p">.</span><span class="n">exe</span>
+<span class="n">hello</span><span class="p">.</span><span class="n">obj</span>
+<span class="p">&gt;</span> <span class="n">dumpbin</span> <span class="p">/</span><span class="n">headers</span> <span class="n">hello</span><span class="p">.</span><span class="n">exe</span>
+<span class="n">Microsoft</span> <span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">COFF</span><span class="p">/</span><span class="n">PE</span> <span class="n">Dumper</span> <span class="n">Version</span> <span class="n">14</span><span class="p">.</span><span class="n">28</span><span class="p">.</span><span class="n">29337</span><span class="p">.</span><span class="n">0</span>
+<span class="n">Copyright</span> <span class="p">(</span><span class="n">C</span><span class="p">)</span> <span class="n">Microsoft</span> <span class="n">Corporation</span><span class="p">.</span>  <span class="n">All</span> <span class="n">rights</span> <span class="n">reserved</span><span class="p">.</span>
+
+
+<span class="n">Dump</span> <span class="n">of</span> <span class="n">file</span> <span class="p">.\</span><span class="n">hello</span><span class="p">.</span><span class="n">exe</span>
+
+<span class="n">PE</span> <span class="n">signature</span> <span class="n">found</span>
+
+<span class="n">File</span> <span class="n">Type</span><span class="p">:</span> <span class="n">EXECUTABLE</span> <span class="n">IMAGE</span>
+
+<span class="n">FILE</span> <span class="n">HEADER</span> <span class="n">VALUES</span>
+             <span class="n">14C</span> <span class="n">machine</span> <span class="p">(</span><span class="n">x86</span><span class="p">)</span>
+               <span class="n">4</span> <span class="n">number</span> <span class="n">of</span> <span class="n">sections</span>
+        <span class="n">60FA3CB7</span> <span class="n">time</span> <span class="n">date</span> <span class="n">stamp</span> <span class="n">Fri</span> <span class="n">Jul</span> <span class="n">23</span> <span class="n">11</span><span class="p">:</span><span class="n">51</span><span class="p">:</span><span class="n">19</span> <span class="n">2021</span>
+               <span class="n">0</span> <span class="n">file</span> <span class="n">pointer</span> <span class="n">to</span> <span class="n">symbol</span> <span class="n">table</span>
+               <span class="n">0</span> <span class="n">number</span> <span class="n">of</span> <span class="n">symbols</span>
+              <span class="n">E0</span> <span class="n">size</span> <span class="n">of</span> <span class="n">optional</span> <span class="n">header</span>
+             <span class="n">102</span> <span class="n">characteristics</span>
+                   <span class="n">Executable</span>
+                   <span class="n">32</span> <span class="n">bit</span> <span class="n">word</span> <span class="n">machine</span>
+
+<span class="n">OPTIONAL</span> <span class="n">HEADER</span> <span class="n">VALUES</span>
+             <span class="n">10B</span> <span class="n">magic</span> <span class="c"># (PE32)</span>
+           <span class="n">14</span><span class="p">.</span><span class="n">28</span> <span class="n">linker</span> <span class="n">version</span>
+           <span class="n">1D000</span> <span class="n">size</span> <span class="n">of</span> <span class="n">code</span>
+           <span class="n">11600</span> <span class="n">size</span> <span class="n">of</span> <span class="n">initialized</span> <span class="n">data</span>
+               <span class="n">0</span> <span class="n">size</span> <span class="n">of</span> <span class="n">uninitialized</span> <span class="n">data</span>
+<span class="hll">            <span class="n">6905</span> <span class="n">entry</span> <span class="n">point</span> <span class="p">(</span><span class="n">00406905</span><span class="p">)</span>
+</span>            <span class="n">1000</span> <span class="n">base</span> <span class="n">of</span> <span class="n">code</span>
+           <span class="n">1E000</span> <span class="n">base</span> <span class="n">of</span> <span class="n">data</span>
+          <span class="n">400000</span> <span class="n">image</span> <span class="n">base</span> <span class="p">(</span><span class="n">00400000</span> <span class="n">to</span> <span class="n">0042FFFF</span><span class="p">)</span>
+            <span class="n">1000</span> <span class="n">section</span> <span class="n">alignment</span>
+             <span class="n">200</span> <span class="n">file</span> <span class="n">alignment</span>
+            <span class="n">6</span><span class="p">.</span><span class="n">00</span> <span class="n">operating</span> <span class="n">system</span> <span class="n">version</span>
+            <span class="n">0</span><span class="p">.</span><span class="n">00</span> <span class="n">image</span> <span class="n">version</span>
+            <span class="n">6</span><span class="p">.</span><span class="n">00</span> <span class="n">subsystem</span> <span class="n">version</span>
+               <span class="n">0</span> <span class="n">Win32</span> <span class="n">version</span>
+           <span class="n">30000</span> <span class="n">size</span> <span class="n">of</span> <span class="n">image</span>
+             <span class="n">400</span> <span class="n">size</span> <span class="n">of</span> <span class="n">headers</span>
+               <span class="n">0</span> <span class="n">checksum</span>
+<span class="hll">               <span class="n">3</span> <span class="n">subsystem</span> <span class="p">(</span><span class="n">Windows</span> <span class="n">CUI</span><span class="p">)</span>
+</span>            <span class="n">8140</span> <span class="n">DLL</span> <span class="n">characteristics</span>
+                   <span class="n">Dynamic</span> <span class="n">base</span>
+                   <span class="n">NX</span> <span class="n">compatible</span>
+                   <span class="n">Terminal</span> <span class="n">Server</span> <span class="n">Aware</span>
+          <span class="n">100000</span> <span class="n">size</span> <span class="n">of</span> <span class="n">stack</span> <span class="n">reserve</span>
+            <span class="n">1000</span> <span class="n">size</span> <span class="n">of</span> <span class="n">stack</span> <span class="n">commit</span>
+          <span class="n">100000</span> <span class="n">size</span> <span class="n">of</span> <span class="n">heap</span> <span class="n">reserve</span>
+            <span class="n">1000</span> <span class="n">size</span> <span class="n">of</span> <span class="n">heap</span> <span class="n">commit</span>
+               <span class="n">0</span> <span class="n">loader</span> <span class="n">flags</span>
+              <span class="n">10</span> <span class="n">number</span> <span class="n">of</span> <span class="n">directories</span>
+               <span class="n">0</span> <span class="p">[</span>       <span class="n">0</span><span class="p">]</span> <span class="n">RVA</span> <span class="no">[size]</span> <span class="n">of</span> <span class="n">Export</span> <span class="n">Directory</span>
+           <span class="n">2B34C</span> <span class="p">[</span>      <span class="n">28</span><span class="p">]</span> <span class="n">RVA</span> <span class="no">[size]</span> <span class="n">of</span> <span class="n">Import</span> <span class="n">Directory</span>
+               <span class="n">0</span> <span class="p">[</span>       <span class="n">0</span><span class="p">]</span> <span class="n">RVA</span> <span class="no">[size]</span> <span class="n">of</span> <span class="n">Resource</span> <span class="n">Directory</span>
+               <span class="n">0</span> <span class="p">[</span>       <span class="n">0</span><span class="p">]</span> <span class="n">RVA</span> <span class="no">[size]</span> <span class="n">of</span> <span class="n">Exception</span> <span class="n">Directory</span>
+               <span class="n">0</span> <span class="p">[</span>       <span class="n">0</span><span class="p">]</span> <span class="n">RVA</span> <span class="no">[size]</span> <span class="n">of</span> <span class="n">Certificates</span> <span class="n">Directory</span>
+           <span class="n">2E000</span> <span class="p">[</span>    <span class="n">1E84</span><span class="p">]</span> <span class="n">RVA</span> <span class="no">[size]</span> <span class="n">of</span> <span class="n">Base</span> <span class="n">Relocation</span> <span class="n">Directory</span>
+           <span class="n">2989C</span> <span class="p">[</span>      <span class="n">1C</span><span class="p">]</span> <span class="n">RVA</span> <span class="no">[size]</span> <span class="n">of</span> <span class="n">Debug</span> <span class="n">Directory</span>
+               <span class="n">0</span> <span class="p">[</span>       <span class="n">0</span><span class="p">]</span> <span class="n">RVA</span> <span class="no">[size]</span> <span class="n">of</span> <span class="n">Architecture</span> <span class="n">Directory</span>
+               <span class="n">0</span> <span class="p">[</span>       <span class="n">0</span><span class="p">]</span> <span class="n">RVA</span> <span class="no">[size]</span> <span class="n">of</span> <span class="n">Global</span> <span class="n">Pointer</span> <span class="n">Directory</span>
+               <span class="n">0</span> <span class="p">[</span>       <span class="n">0</span><span class="p">]</span> <span class="n">RVA</span> <span class="no">[size]</span> <span class="n">of</span> <span class="n">Thread</span> <span class="n">Storage</span> <span class="n">Directory</span>
+           <span class="n">298B8</span> <span class="p">[</span>      <span class="n">40</span><span class="p">]</span> <span class="n">RVA</span> <span class="no">[size]</span> <span class="n">of</span> <span class="n">Load</span> <span class="n">Configuration</span> <span class="n">Directory</span>
+               <span class="n">0</span> <span class="p">[</span>       <span class="n">0</span><span class="p">]</span> <span class="n">RVA</span> <span class="no">[size]</span> <span class="n">of</span> <span class="n">Bound</span> <span class="n">Import</span> <span class="n">Directory</span>
+           <span class="n">1E000</span> <span class="p">[</span>     <span class="n">128</span><span class="p">]</span> <span class="n">RVA</span> <span class="no">[size]</span> <span class="n">of</span> <span class="n">Import</span> <span class="n">Address</span> <span class="n">Table</span> <span class="n">Directory</span>
+               <span class="n">0</span> <span class="p">[</span>       <span class="n">0</span><span class="p">]</span> <span class="n">RVA</span> <span class="no">[size]</span> <span class="n">of</span> <span class="n">Delay</span> <span class="n">Import</span> <span class="n">Directory</span>
+               <span class="n">0</span> <span class="p">[</span>       <span class="n">0</span><span class="p">]</span> <span class="n">RVA</span> <span class="no">[size]</span> <span class="n">of</span> <span class="n">COM</span> <span class="n">Descriptor</span> <span class="n">Directory</span>
+               <span class="n">0</span> <span class="p">[</span>       <span class="n">0</span><span class="p">]</span> <span class="n">RVA</span> <span class="no">[size]</span> <span class="n">of</span> <span class="n">Reserved</span> <span class="n">Directory</span>
+
+<span class="n">SECTION</span> <span class="n">HEADER</span> <span class="c">#1</span>
+   <span class="p">.</span><span class="n">text</span> <span class="n">name</span>
+   <span class="n">1CFD8</span> <span class="n">virtual</span> <span class="n">size</span>
+    <span class="n">1000</span> <span class="n">virtual</span> <span class="n">address</span> <span class="p">(</span><span class="n">00401000</span> <span class="n">to</span> <span class="n">0041DFD7</span><span class="p">)</span>
+   <span class="n">1D000</span> <span class="n">size</span> <span class="n">of</span> <span class="n">raw</span> <span class="n">data</span>
+     <span class="n">400</span> <span class="n">file</span> <span class="n">pointer</span> <span class="n">to</span> <span class="n">raw</span> <span class="n">data</span> <span class="p">(</span><span class="n">00000400</span> <span class="n">to</span> <span class="n">0001D3FF</span><span class="p">)</span>
+       <span class="n">0</span> <span class="n">file</span> <span class="n">pointer</span> <span class="n">to</span> <span class="n">relocation</span> <span class="n">table</span>
+       <span class="n">0</span> <span class="n">file</span> <span class="n">pointer</span> <span class="n">to</span> <span class="n">line</span> <span class="n">numbers</span>
+       <span class="n">0</span> <span class="n">number</span> <span class="n">of</span> <span class="n">relocations</span>
+       <span class="n">0</span> <span class="n">number</span> <span class="n">of</span> <span class="n">line</span> <span class="n">numbers</span>
+<span class="n">60000020</span> <span class="n">flags</span>
+         <span class="n">Code</span>
+         <span class="n">Execute</span> <span class="n">Read</span>
+
+<span class="c"># ... 省略</span>
+
+  <span class="n">Summary</span>
+
+        <span class="n">2000</span> <span class="p">.</span><span class="n">data</span>
+        <span class="n">E000</span> <span class="p">.</span><span class="n">rdata</span>
+        <span class="n">2000</span> <span class="p">.</span><span class="n">reloc</span>
+       <span class="n">1D000</span> <span class="p">.</span><span class="n">text</span>
+</code></pre></div>
+<p>程序有类似的 Entry Point 地址，还有 Windows 上标识一个程序是不是图形界面程序的标志。这里 CUI 表示这个程序是 Console UI，也就是控制台程序。</p>
+<p>我们可以看看记事本程序的标志：</p>
+<div class="highlight"><pre><span></span><code><span class="p">&gt;</span> <span class="n">dumpbin</span> <span class="p">/</span><span class="n">headers</span> <span class="n">C</span><span class="p">:\</span><span class="n">Windows</span><span class="p">\</span><span class="n">System32</span><span class="p">\</span><span class="n">notepad</span><span class="p">.</span><span class="n">exe</span>
+<span class="n">Microsoft</span> <span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">COFF</span><span class="p">/</span><span class="n">PE</span> <span class="n">Dumper</span> <span class="n">Version</span> <span class="n">14</span><span class="p">.</span><span class="n">28</span><span class="p">.</span><span class="n">29337</span><span class="p">.</span><span class="n">0</span>
+<span class="n">Copyright</span> <span class="p">(</span><span class="n">C</span><span class="p">)</span> <span class="n">Microsoft</span> <span class="n">Corporation</span><span class="p">.</span>  <span class="n">All</span> <span class="n">rights</span> <span class="n">reserved</span><span class="p">.</span>
+
+
+<span class="n">Dump</span> <span class="n">of</span> <span class="n">file</span> <span class="n">C</span><span class="p">:\</span><span class="n">Windows</span><span class="p">\</span><span class="n">System32</span><span class="p">\</span><span class="n">notepad</span><span class="p">.</span><span class="n">exe</span>
+
+<span class="n">PE</span> <span class="n">signature</span> <span class="n">found</span>
+
+<span class="n">File</span> <span class="n">Type</span><span class="p">:</span> <span class="n">EXECUTABLE</span> <span class="n">IMAGE</span>
+
+<span class="n">FILE</span> <span class="n">HEADER</span> <span class="n">VALUES</span>
+            <span class="n">8664</span> <span class="n">machine</span> <span class="p">(</span><span class="n">x64</span><span class="p">)</span>
+               <span class="n">7</span> <span class="n">number</span> <span class="n">of</span> <span class="n">sections</span>
+        <span class="n">86FCBD69</span> <span class="n">time</span> <span class="n">date</span> <span class="n">stamp</span>
+               <span class="n">0</span> <span class="n">file</span> <span class="n">pointer</span> <span class="n">to</span> <span class="n">symbol</span> <span class="n">table</span>
+               <span class="n">0</span> <span class="n">number</span> <span class="n">of</span> <span class="n">symbols</span>
+              <span class="n">F0</span> <span class="n">size</span> <span class="n">of</span> <span class="n">optional</span> <span class="n">header</span>
+              <span class="n">22</span> <span class="n">characteristics</span>
+                   <span class="n">Executable</span>
+                   <span class="n">Application</span> <span class="n">can</span> <span class="n">handle</span> <span class="n">large</span> <span class="p">(&gt;</span><span class="n">2GB</span><span class="p">)</span> <span class="n">addresses</span>
+
+<span class="n">OPTIONAL</span> <span class="n">HEADER</span> <span class="n">VALUES</span>
+             <span class="n">20B</span> <span class="n">magic</span> <span class="c"># (PE32+)</span>
+           <span class="n">14</span><span class="p">.</span><span class="n">20</span> <span class="n">linker</span> <span class="n">version</span>
+           <span class="n">24A00</span> <span class="n">size</span> <span class="n">of</span> <span class="n">code</span>
+            <span class="n">E200</span> <span class="n">size</span> <span class="n">of</span> <span class="n">initialized</span> <span class="n">data</span>
+               <span class="n">0</span> <span class="n">size</span> <span class="n">of</span> <span class="n">uninitialized</span> <span class="n">data</span>
+           <span class="n">23DB0</span> <span class="n">entry</span> <span class="n">point</span> <span class="p">(</span><span class="n">0000000140023DB0</span><span class="p">)</span>
+            <span class="n">1000</span> <span class="n">base</span> <span class="n">of</span> <span class="n">code</span>
+       <span class="n">140000000</span> <span class="n">image</span> <span class="n">base</span> <span class="p">(</span><span class="n">0000000140000000</span> <span class="n">to</span> <span class="n">0000000140037FFF</span><span class="p">)</span>
+            <span class="n">1000</span> <span class="n">section</span> <span class="n">alignment</span>
+             <span class="n">200</span> <span class="n">file</span> <span class="n">alignment</span>
+           <span class="n">10</span><span class="p">.</span><span class="n">00</span> <span class="n">operating</span> <span class="n">system</span> <span class="n">version</span>
+           <span class="n">10</span><span class="p">.</span><span class="n">00</span> <span class="n">image</span> <span class="n">version</span>
+           <span class="n">10</span><span class="p">.</span><span class="n">00</span> <span class="n">subsystem</span> <span class="n">version</span>
+               <span class="n">0</span> <span class="n">Win32</span> <span class="n">version</span>
+           <span class="n">38000</span> <span class="n">size</span> <span class="n">of</span> <span class="n">image</span>
+             <span class="n">400</span> <span class="n">size</span> <span class="n">of</span> <span class="n">headers</span>
+           <span class="n">36BB0</span> <span class="n">checksum</span>
+<span class="hll">               <span class="n">2</span> <span class="n">subsystem</span> <span class="p">(</span><span class="n">Windows</span> <span class="n">GUI</span><span class="p">)</span>
+</span>            <span class="n">C160</span> <span class="n">DLL</span> <span class="n">characteristics</span>
+                   <span class="n">High</span> <span class="n">Entropy</span> <span class="n">Virtual</span> <span class="n">Addresses</span>
+                   <span class="n">Dynamic</span> <span class="n">base</span>
+                   <span class="n">NX</span> <span class="n">compatible</span>
+                   <span class="n">Control</span> <span class="n">Flow</span> <span class="n">Guard</span>
+                   <span class="n">Terminal</span> <span class="n">Server</span> <span class="n">Aware</span>
+           <span class="n">80000</span> <span class="n">size</span> <span class="n">of</span> <span class="n">stack</span> <span class="n">reserve</span>
+           <span class="n">11000</span> <span class="n">size</span> <span class="n">of</span> <span class="n">stack</span> <span class="n">commit</span>
+          <span class="n">100000</span> <span class="n">size</span> <span class="n">of</span> <span class="n">heap</span> <span class="n">reserve</span>
+            <span class="n">1000</span> <span class="n">size</span> <span class="n">of</span> <span class="n">heap</span> <span class="n">commit</span>
+               <span class="n">0</span> <span class="n">loader</span> <span class="n">flags</span>
+              <span class="n">10</span> <span class="n">number</span> <span class="n">of</span> <span class="n">directories</span>
+<span class="c"># ...</span>
+</code></pre></div>
+<p>记事本不出意外的是 GUI 程序了。如果你好奇有什么其他的 Subsystem，可以看<a href="https://docs.microsoft.com/en-us/cpp/build/reference/subsystem-specify-subsystem">微软的官方文档</a>。</p>
+</details>
+<h2 id="总结">总结<a class="headerlink" href="#总结" title="Permanent link">&para;</a></h2>
+<p>至此，发生在 <code>g++</code> 背后的故事你已经简单地有了一个概念。理解这些过程以及原理是构建更大项目的基础。</p>
+
+  <hr>
+<div class="md-source-file">
+  <small>
+    
+      最后更新:
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_datetime">2021-07-23 12:20:07</span>
+      
+    
+  </small>
+</div>
+
+
+  
+
+
+
+
+                
+  </div>
+
+  
+    <div class="md-source-date">
+      <small>
+          本页作者: <span class='git-page-authors git-authors'><a href='mailto:howardlau1999@hotmail.com'>Howard Lau</a></span>
+      </small>
+    </div>
+  
+
+              </article>
+            </div>
+          
+          
+        </div>
+        
+          <a href="#" class="md-top md-icon" data-md-component="top" hidden>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+            回到页面顶部
+          </a>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="页脚" >
+      
+        
+        <a href="../" class="md-footer__link md-footer__link--prev" aria-label="上一页: 概览" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              概览
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../static-dynamic-linkage/" class="md-footer__link md-footer__link--next" aria-label="下一页: 静态链接与动态链接" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              静态链接与动态链接
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.top"], "search": "../../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\s\\-\uff0c\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version.title": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.8492ddcf.min.js"></script>
+      
+    
+  </body>
+</html>
