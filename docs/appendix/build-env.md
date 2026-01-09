@@ -85,3 +85,81 @@ wsl git clone https://github.com/howardlau1999/server-programming-guide.git
 从这种意义上来说，你可以把 wsl 当做 windows 下的一个超级包管理器，可以通过 wsl 安装使用 linux 下的工具链。当然要注意的是，如果项目中没有特别约束，那么这样做的一切设置（例如行末回车是`CRLF`还是`LF`）都是按照 Linux 中的设置来的，因此如果在 Windows 中直接打开的话可能会出现乱码的情况，此时换一个可以正确处理的编辑器（如 vscode）可解决。
 
 ## macOS
+
+macOS 是一个类 Unix 系统，因此非常适合进行服务器程序的开发。在 macOS 上进行开发，一般使用 Apple 的 LLVM 工具链。
+
+需要注意的是，macOS 上的 `g++` 命令实际上只是 `clang++` 的一个别名（软链接），并非真正的 GNU GCC。Apple 这样做的目的是为了保持命令行的兼容性，但底层使用的实际上是 LLVM Clang 编译器。
+
+### 安装 Command Line Tools
+
+在 macOS 上，我们并不需要安装庞大的 Xcode 就可以获得编译器。只需要在终端中运行以下命令即可安装 Command Line Tools，其中包含了 GCC, Clang, Make, Git 等常用工具：
+
+```bash
+xcode-select --install
+```
+
+运行后会在弹出的窗口中点击“安装”即可。
+
+安装完成后，我们可以通过在终端中运行以下命令来验证编译器和常用工具是否安装成功。你会发现 `g++ --version` 的输出中包含 `Apple clang` 字样，这印证了前文提到的 macOS 默认使用 Clang 的说明。
+
+```bash
+# 验证 C++ 编译器（注意观察输出，你会发现它实际上是 Clang）
+g++ --version
+# 验证 Git
+git --version
+# 验证 Make
+make --version
+```
+
+### 安装 Homebrew
+
+[Homebrew](https://brew.sh/) 是 macOS 下非常流行的包管理器，我们可以使用它来安装 CMake, Ninja 等构建工具。
+
+在终端中运行以下命令即可安装 Homebrew：
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+???+ note "中国大陆用户特别说明"
+    如果你身处中国大陆，由于网络环境原因，上述官方安装命令可能会超时或失败。这种情况下，推荐使用 [中国科学技术大学（USTC）开源软件镜像站](https://mirrors.ustc.edu.cn/help/brew.git.html) 进行安装。
+
+    首先，在终端中运行以下命令设置环境变量，指定使用 USTC 镜像源：
+
+    ```bash
+    export HOMEBREW_BREW_GIT_REMOTE="https://mirrors.ustc.edu.cn/brew.git"
+    export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.ustc.edu.cn/homebrew-core.git"
+    export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.ustc.edu.cn/homebrew-bottles"
+    export HOMEBREW_API_DOMAIN="https://mirrors.ustc.edu.cn/homebrew-bottles/api"
+    ```
+
+    设置好环境变量后，运行以下命令使用 USTC 托管的安装脚本进行安装：
+
+    ```bash
+    /bin/bash -c "$(curl -fsSL https://mirrors.ustc.edu.cn/misc/brew-install.sh)"
+    ```
+
+    这样可以极大地提高安装速度并避免网络连接问题。
+
+安装完成后，可以运行 `brew --version` 来验证是否安装成功。
+
+### 安装常用工具
+
+安装好 Homebrew 后，就可以安装我们需要用到的构建工具了。虽然 Command Line Tools 中已经包含了 Git，但为了获得更好的体验，我们也推荐使用 Homebrew 安装最新版本的 Git：
+
+```bash
+brew install cmake ninja git
+```
+
+安装完成后，依次运行以下命令验证：
+
+```bash
+cmake --version
+ninja --version
+# 验证新版本的 git
+git --version
+```
+
+### 配置 VSCode
+
+在 macOS 上使用 VSCode 开发 C++ 程序也非常方便。安装好上述工具后，只需要安装 VSCode 的 [C/C++ 插件](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)，通常就可以直接开箱即用。
